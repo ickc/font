@@ -136,7 +136,12 @@ def tex_gyre_schola_math() -> None:
 
 
 def noto_cjk_tc() -> None:
-    base = "https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans"
+    # Pinned to a commit, not to `main`: the hashes below are fixed, so any
+    # upstream commit touching either font or the license would make every
+    # `pixi run setup` fail with no mirror to fall back on. This commit
+    # carries the Sans2.004 font files and the SIL OFL 1.1 relicensing.
+    revision = "f8d157532fbfaeda587e826d4cd5b21a49186f7c"
+    base = f"https://raw.githubusercontent.com/notofonts/noto-cjk/{revision}/Sans"
     faces = {
         "NotoSansCJKtc-Regular.otf": "dce08bd4fd91aa8aa76ed8fea4b694c2dfb8550f67871e326843212ddbeb88b4",
         "NotoSansCJKtc-Bold.otf": "3ee160e5015106e3ec1a394301df54fa9bbbf8a251519984aec5c0abc50840c0",
