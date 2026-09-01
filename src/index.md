@@ -141,9 +141,14 @@ in both HTML variants.
 LuaLaTeX uses Pandoc's `babelfonts` map, while Typst uses its `codefont`
 variable and Unicode coverage rules. The four matching vanilla-Pandoc defaults
 under `config/` are deliberately self-contained: each repeats its reader,
-writer, table-of-contents, language, and renderer/engine settings so it can be
-copied as a complete recipe. This retains one Markdown source without loading
-LaTeX's heavier `luatexja` CJK stack.
+writer, table-of-contents, and renderer/engine settings so it can be copied as a
+complete recipe. This retains one Markdown source without loading LaTeX's
+heavier `luatexja` CJK stack.
+
+A defaults file's `metadata:` block overrides the document's own front matter
+rather than filling a gap in it, so it carries only what belongs to the recipe:
+the fonts. Language stays with the document, where every source already declares
+it for Quarto.
 
 ## Which files belong to which tool
 

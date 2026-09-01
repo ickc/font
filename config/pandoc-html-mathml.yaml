@@ -5,8 +5,6 @@ to: html5
 standalone: true
 table-of-contents: true
 toc-depth: 3
-metadata:
-  lang: en
 html-math-method:
   method: mathml
 # Rewrites relative `*.md` link targets to the `.html` files this recipe

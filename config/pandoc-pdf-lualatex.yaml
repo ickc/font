@@ -6,8 +6,12 @@ standalone: true
 table-of-contents: true
 toc-depth: 3
 pdf-engine: lualatex
+# A defaults file's `metadata:` overrides the document's own front matter
+# rather than filling a gap in it, so only what belongs to the recipe goes
+# here. The fonts do: they are what this recipe is. `lang` does not -- each
+# source declares its own, exactly as it does for Quarto, and pinning it here
+# would silently relabel a page written in another language.
 metadata:
-  lang: en
   mainfont: TeX Gyre Schola
   mathfont: TeX Gyre Schola Math
   monofont: JetBrains Mono
