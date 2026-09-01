@@ -18,6 +18,8 @@ website:
     left:
       - href: index.md
         text: Home
+      - href: multilingual.md
+      - href: math.md
     right:
       - icon: github
         href: https://github.com/ickc/font
