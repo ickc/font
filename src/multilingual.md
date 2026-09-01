@@ -16,7 +16,3 @@ output: index
 And God said, Let there be light: and there was light.
 
 神說：「要有光」，就有了光。
-
-# Math samples
-
-$E = mc^2$
