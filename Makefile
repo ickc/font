@@ -22,8 +22,8 @@ STAGED_ASSETS := $(patsubst src/assets/%,$(OUTPUT_DIR)/assets/%,$(ASSETS))
 MATHML_CONFIG := config/pandoc-html-mathml.yaml config/md-links.lua
 MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml config/md-links.lua \
 	src/_extensions/mathjax4/mathjax-schola.html
-LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml
-TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/fonts.typ
+LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml config/md-links.lua
+TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/md-links.lua config/fonts.typ
 
 .PHONY: all clean
 

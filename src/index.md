@@ -43,6 +43,8 @@ format:
       - typst
   pdf:
     output-file: index-lualatex.pdf
+    filters:
+      - ../config/md-links.lua
     pdf-engine: lualatex
     latex-tinytex: false
     # .github/tl_packages is the declared package set. Left on, Quarto reacts to
@@ -60,6 +62,8 @@ format:
       chinese-hant: NotoSansCJKtc
   typst:
     output-file: index-typst.pdf
+    filters:
+      - ../config/md-links.lua
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math
     codefont: JetBrains Mono
@@ -131,8 +135,17 @@ Use semantic language spans in otherwise ordinary Pandoc Markdown:
 The same markup becomes HTML `lang`/`dir` attributes and LaTeX
 `\foreignlanguage` calls. Pandoc's Typst writer currently discards span
 attributes, so `config/fonts.typ` selects the three non-Latin fonts by Unicode
-script coverage. This is a Typst header rule, not an AST filter; no Lua filter
-is required.
+script coverage. This is a Typst header rule, not an AST filter; font selection
+needs no Lua filter.
+
+Cross-document links are written as `multilingual.md`, the target that is also
+correct when reading the source on GitHub. Neither tool infers an extension, so
+a bare `multilingual` would stay bare in every output; the rewriting has to be
+explicit. Quarto does it for its own HTML and not for its PDFs, so
+`config/md-links.lua` does it for all four recipes in both pipelines, turning a
+relative `*.md` target into the `.html` page that is published beside it.
+Absolute, protocol-relative, and root-relative targets are left alone, and any
+`#anchor` is preserved.
 
 Each Quarto source declares all four outputs in its own `format` map. This map
 is Quarto-specific; vanilla Pandoc reads the shared top-level metadata and
@@ -159,7 +172,7 @@ it for Quarto.
 
 | Consumer | Files |
 |------------------------------------------------------------|------------------------------------------------------------|
-| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `scripts/activate.sh`, font and TeX setup scripts |
+| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `config/md-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
 | Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
 

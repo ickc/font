@@ -6,6 +6,12 @@ standalone: true
 table-of-contents: true
 toc-depth: 3
 pdf-engine: typst
+# Rewrites relative `*.md` link targets to `.html`, so a cross-document link
+# points at the published page rather than at a Markdown source this recipe
+# never emits. The HTML recipes do the same; Quarto rewrites its own HTML but
+# not its PDFs, which is why this belongs on all four.
+filters:
+  - ${.}/md-links.lua
 # A defaults file's `metadata:` overrides the document's own front matter
 # rather than filling a gap in it, so only what belongs to the recipe goes
 # here. The fonts do: they are what this recipe is. `lang` does not -- each

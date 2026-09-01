@@ -43,6 +43,8 @@ format:
       - typst
   pdf:
     output-file: multilingual-lualatex.pdf
+    filters:
+      - ../config/md-links.lua
     pdf-engine: lualatex
     latex-tinytex: false
     # .github/tl_packages is the declared package set. Left on, Quarto reacts to
@@ -60,6 +62,8 @@ format:
       chinese-hant: NotoSansCJKtc
   typst:
     output-file: multilingual-typst.pdf
+    filters:
+      - ../config/md-links.lua
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math
     codefont: JetBrains Mono
