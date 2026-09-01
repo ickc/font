@@ -3,6 +3,6 @@ mainfont: TeX Gyre Schola
 mathfont: TeX Gyre Schola Math
 monofont: JetBrains Mono
 babelfonts:
-  greek: SBL Greek
-  hebrew: SBL Hebrew
+  greek: Gentium
+  hebrew: Ezra SIL
   chinese-hant: Noto Sans CJK TC

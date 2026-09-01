@@ -42,19 +42,41 @@
   font-display: swap;
 }
 
-/* SBL's EULA prohibits distributing converted/modified versions. These two
-   sources are the original, unmodified TTF downloads. */
 @font-face {
-  font-family: "SBL Greek";
-  src: url("fonts/SBL_grk.ttf") format("truetype");
+  font-family: "Gentium";
+  src: url("fonts/Gentium-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "SBL Hebrew";
-  src: url("fonts/SBL_Hbrw.ttf") format("truetype");
+  font-family: "Gentium";
+  src: url("fonts/Gentium-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gentium";
+  src: url("fonts/Gentium-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gentium";
+  src: url("fonts/Gentium-BoldItalic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ezra SIL";
+  src: url("fonts/SILEOT.woff") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -86,11 +108,11 @@ body {
 }
 
 :lang(el) {
-  font-family: "SBL Greek", serif;
+  font-family: "Gentium", serif;
 }
 
 :lang(he) {
-  font-family: "SBL Hebrew", serif;
+  font-family: "Ezra SIL", serif;
 }
 
 :lang(zh), :lang(zh-Hant) {

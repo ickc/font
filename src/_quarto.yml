@@ -24,19 +24,5 @@ website:
   page-footer:
     left: "© 2026 Kolen Cheung"
 
-format:
-  html:
-    theme:
-      light: flatly
-      dark: darkly
-    respect-user-color-scheme: true
-    toc: true
-    toc-depth: 3
-    code-copy: true
-    code-overflow: wrap
-    email-obfuscation: javascript
-    html-math-method: mathml
-    css: assets/fonts.css
-
 execute:
   freeze: auto

@@ -18,19 +18,23 @@ same four artifacts into `pandoc-output/`.
 ## Quick start
 
 ```sh
-pixi run download-fonts
+pixi run setup
 pixi run build
 pixi run pandoc-build
 ```
 
-`download-fonts` installs desktop fonts into the conventional per-user font
+`setup` is an explicit, one-time machine setup. It installs desktop fonts into
+the conventional per-user font
 directory (`~/.local/share/fonts/font-kolen-dev` on Linux or
 `~/Library/Fonts/font-kolen-dev` on macOS) and stages browser fonts below
-`src/assets/fonts/`. Pixi also sets `TYPST_FONT_PATHS` to that directory, so
-Typst does not depend on platform font-cache behaviour.
+`src/assets/fonts/`. It also stages the small `selnolig` package needed by
+minimal TeX Live installations. Pixi sets `TYPST_FONT_PATHS` to the per-user
+font directory, so Typst does not depend on platform font-cache behaviour.
 
-To preview the Quarto website, run `pixi run serve`. To remove generated
-outputs, run `pixi run clean`.
+`build`, `pandoc-build`, and `serve` never install anything. If setup has not
+been run, rendering fails at the missing font or TeX dependency. To preview the
+Quarto website after setup, run `pixi run serve`. To remove generated outputs,
+run `pixi run clean`.
 
 ## Authoring convention
 
@@ -50,16 +54,29 @@ attributes, so `config/fonts.typ` selects the three non-Latin fonts by Unicode
 script coverage. This is a Typst header rule, not an AST filter; no Lua filter
 is required.
 
-Font metadata lives in format-specific files under `config/`, not in every
-source document. LuaLaTeX uses Pandoc's `babelfonts` map, while Typst uses its
-`codefont` variable and Unicode coverage rules. This retains one Markdown
-source without loading LaTeX's heavier `luatexja` CJK stack.
+Each Quarto source declares all four outputs in its own `format` map. The
+`mathjax4-html` key comes from the small local extension under
+`src/_extensions/mathjax4/`; it exists solely so the source can list two HTML
+formats without duplicate YAML keys. `output-file` gives each format a stable
+name, and format-specific `format-links` generate the sibling-download links
+in both HTML variants.
+
+LuaLaTeX uses Pandoc's `babelfonts` map, while Typst uses its `codefont`
+variable and Unicode coverage rules. The matching vanilla-Pandoc defaults live
+under `config/`. This retains one Markdown source without loading LaTeX's
+heavier `luatexja` CJK stack.
 
 ## Adding documents
 
-Add another `.md` file directly under `src/`. `scripts/render_quarto.py` and
-the Makefile discover it automatically. Reserve names ending in `-mathjax`,
-`-lualatex`, and `-typst` for generated files.
+Add another `.md` file directly under `src/`, copy the `format` and
+`format-links` maps from `src/index.md`, and adjust its four `output-file`
+basenames. Both `pixi run build` and the Makefile discover source files
+automatically. Reserve names ending in `-mathjax`, `-lualatex`, and `-typst`
+for generated files.
+
+The original root-level `sample.md` supplied with the template remains in
+place unchanged. The runnable site source is `src/index.md`, because the
+existing Quarto project root and output directory are both under `src/`.
 
 ## Font sources and licensing
 
@@ -67,22 +84,21 @@ the Makefile discover it automatically. Reserve names ending in `-mathjax`,
 - Noto Sans CJK TC comes from the official Noto CJK repository (SIL OFL 1.1).
   Browser output uses Google Fonts' `Noto Sans TC` CDN family and local PDF
   output uses `Noto Sans CJK TC`.
+- Gentium 7.000 comes from SIL. It has comprehensive monotonic and polytonic
+  Greek support. The desktop TTFs and official WOFF2 files are SIL OFL 1.1.
+- Ezra SIL 2.51 comes from SIL. It is designed after the Biblia Hebraica
+  Stuttgartensia and includes Biblical Hebrew points and cantillation. The
+  desktop TTF and official WOFF file are SIL OFL 1.1.
 - JetBrains Mono comes from the official v2.304 release (SIL OFL 1.1).
-- SBL Greek and SBL Hebrew come directly from the Society of Biblical
-  Literature.
 
-The SBL fonts have a special EULA: free use and web embedding are limited to
-non-commercial purposes; commercial use requires a license. The EULA also
-forbids redistribution of modified versions, so this project deliberately
-serves the original TTFs rather than converted WOFF2 files and deploys a copy
-of the EULA beside them. Running an SBL download task installs the font and
-therefore constitutes acceptance of that EULA. Do not deploy this pattern for
-commercial use until you have obtained the required SBL license.
+Gentium and Ezra SIL replace SBL Greek and SBL Hebrew. Besides removing the
+non-commercial restriction, the pair has compatible scholarly, calligraphic
+serif forms that sit naturally beside TeX Gyre Schola. The repository stages
+SIL's official web-font files rather than modifying them.
 
-Generated font binaries and documents are ignored by Git. A deployment build
-must run `pixi run download-fonts` before `pixi run build` so the web-font
-assets are present in `src/docs/assets/fonts/`.
+Generated font binaries and documents are ignored by Git. Run `pixi run setup`
+once on a new authoring or deployment machine; subsequent builds reuse the
+installed and staged files.
 
 LuaLaTeX itself must be installed by the host TeX Live distribution. The build
-stages the small `selnolig` package expected by Pandoc's default template, but
 does not attempt to replace the operating system's TeX Live installation.

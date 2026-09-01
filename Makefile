@@ -27,12 +27,12 @@ $(OUTPUT_DIR)/%.html: src/%.md $(OUTPUT_DIR)/assets/fonts.css
 $(OUTPUT_DIR)/%-mathjax.html: src/%.md $(OUTPUT_DIR)/assets/fonts.css
 	$(PANDOC) $< $(COMMON) --to=html5 \
 		--metadata-file=config/html-mathjax.yaml \
-		--include-in-header=src/includes/mathjax-schola.html \
+		--include-in-header=src/_extensions/mathjax4/mathjax-schola.html \
 		--mathjax=https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml-nofont.js \
 		--css=assets/fonts.css --output=$@
 
 $(OUTPUT_DIR)/%-lualatex.pdf: src/%.md | $(OUTPUT_DIR)
-	$(PANDOC) $< $(COMMON) --to=pdf --pdf-engine=lualatex \
+	$(PANDOC) $< $(COMMON) --to=pdf --pdf-engine=scripts/lualatex \
 		--metadata-file=config/pdf-lualatex.yaml --output=$@
 
 $(OUTPUT_DIR)/%-typst.pdf: src/%.md | $(OUTPUT_DIR)

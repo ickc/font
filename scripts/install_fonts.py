@@ -151,27 +151,47 @@ def noto_cjk_tc() -> None:
     print("Noto Sans TC browser files are supplied by Google Fonts; no local web copy is staged.")
 
 
-SBL_EULA = (
-    "SBL_Font_End_User_License_Agreement.pdf",
-    ["https://www.sbl-site.org/wp-content/uploads/2024/05/SBL_Font_End_User_License_Agreement.pdf"],
-    "70c6d5d0f95a97c80f348e5dc22ac647a4b591a5cf6d5021a0588563eed844ed",
-)
+def gentium() -> None:
+    archive = download(
+        "Gentium-7.000.zip",
+        ["https://software.sil.org/downloads/r/gentium/Gentium-7.000.zip"],
+        "313e64963ba27851356060a725d36ce01680e5c5c63f46e4b40f15741c043e21",
+    )
+    root = "Gentium-7.000"
+    with zipfile.ZipFile(archive) as bundle, tempfile.TemporaryDirectory() as temporary:
+        temp_dir = Path(temporary)
+        for style in ("Regular", "Bold", "Italic", "BoldItalic"):
+            ttf_member = f"{root}/Gentium-{style}.ttf"
+            woff_member = f"{root}/web/Gentium-{style}.woff2"
+            bundle.extract(ttf_member, temp_dir)
+            bundle.extract(woff_member, temp_dir)
+            install(temp_dir / ttf_member)
+            stage(temp_dir / woff_member)
+        license_member = f"{root}/OFL.txt"
+        bundle.extract(license_member, temp_dir)
+        install(temp_dir / license_member, "Gentium-OFL.txt")
+        stage(temp_dir / license_member, "Gentium-OFL.txt")
 
 
-def sbl_font(kind: str) -> None:
-    values = {
-        "sbl-greek": ("SBL_grk.ttf", "cbf8b1a87a4a311e2aa9b5b2995f83b23159fbe0ca9ca517d3fd43b5911e925a"),
-        "sbl-hebrew": ("SBL_Hbrw.ttf", "98eca8ecc97af984e205c282d6a0e994af41612029e49a223e85677b71cf9e99"),
-    }
-    name, sha256 = values[kind]
-    base = "https://www.sbl-site.org/wp-content/themes/basket/fonts/bib-fonts"
-    source = download(name, [f"{base}/{name}"], sha256)
-    eula = download(*SBL_EULA)
-    install(source)
-    install(eula)
-    stage(source)
-    stage(eula)
-    print("NOTICE: installing an SBL font accepts its EULA; free use is non-commercial only.")
+def ezra_sil() -> None:
+    archive = download(
+        "EzraSIL-2.51-web.zip",
+        ["https://software.sil.org/downloads/r/ezra/EzraSIL-2.51-web.zip"],
+        "7c19544c173c91e6ac47f605dae2cfa7e61e428abdafe27cf3f225fec4406357",
+    )
+    root = "EzraSIL-2.51-web"
+    with zipfile.ZipFile(archive) as bundle, tempfile.TemporaryDirectory() as temporary:
+        temp_dir = Path(temporary)
+        for member in (
+            f"{root}/SILEOT.ttf",
+            f"{root}/web/SILEOT.woff",
+            f"{root}/Licenses.txt",
+        ):
+            bundle.extract(member, temp_dir)
+        install(temp_dir / root / "SILEOT.ttf")
+        stage(temp_dir / root / "web" / "SILEOT.woff")
+        install(temp_dir / root / "Licenses.txt", "EzraSIL-Licenses.txt")
+        stage(temp_dir / root / "Licenses.txt", "EzraSIL-Licenses.txt")
 
 
 def jetbrains_mono() -> None:
@@ -202,8 +222,8 @@ INSTALLERS = {
     "tex-gyre-schola": tex_gyre_schola,
     "tex-gyre-schola-math": tex_gyre_schola_math,
     "noto-cjk-tc": noto_cjk_tc,
-    "sbl-greek": lambda: sbl_font("sbl-greek"),
-    "sbl-hebrew": lambda: sbl_font("sbl-hebrew"),
+    "gentium": gentium,
+    "ezra-sil": ezra_sil,
     "jetbrains-mono": jetbrains_mono,
 }
 

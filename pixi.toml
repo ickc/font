@@ -24,17 +24,18 @@ scripts = ["scripts/activate.sh"]
 download-tex-gyre-schola = { cmd = "python scripts/install_fonts.py tex-gyre-schola", description = "Install TeX Gyre Schola and stage its web fonts" }
 download-tex-gyre-schola-math = { cmd = "python scripts/install_fonts.py tex-gyre-schola-math", description = "Install TeX Gyre Schola Math and stage its web font" }
 download-noto-cjk-tc = { cmd = "python scripts/install_fonts.py noto-cjk-tc", description = "Install Noto Sans CJK TC (web output uses Google Fonts)" }
-download-sbl-greek = { cmd = "python scripts/install_fonts.py sbl-greek", description = "Install and stage the original SBL Greek TTF (accepts SBL EULA)" }
-download-sbl-hebrew = { cmd = "python scripts/install_fonts.py sbl-hebrew", description = "Install and stage the original SBL Hebrew TTF (accepts SBL EULA)" }
+download-gentium = { cmd = "python scripts/install_fonts.py gentium", description = "Install Gentium and stage its official WOFF2 files" }
+download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official WOFF file" }
 download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
-download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-sbl-greek", "download-sbl-hebrew", "download-jetbrains-mono"], description = "Install every desktop font and stage every browser font" }
+download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
+setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
-build = { cmd = "python scripts/render_quarto.py", depends-on = ["download-fonts", "setup-tex-support"], description = "Render four Quarto artifacts for each source document" }
-serve = { cmd = "quarto preview src --port $QUARTO_PORT --host 0.0.0.0", depends-on = ["download-fonts"], description = "Preview the Quarto site on port QUARTO_PORT" }
+build = { cmd = "quarto render", cwd = "src", description = "Render every format declared by the Quarto sources" }
+serve = { cmd = "quarto preview src --port $QUARTO_PORT --host 0.0.0.0", description = "Preview the Quarto site without installing fonts" }
 clean = { cmd = "make clean", description = "Remove Quarto and vanilla Pandoc output" }
 
-pandoc-build = { cmd = "make all", depends-on = ["download-fonts", "setup-tex-support"], description = "Render four vanilla Pandoc artifacts for each source document" }
+pandoc-build = { cmd = "make all", description = "Render four vanilla Pandoc artifacts for each source document" }
 
 linkcheck = { cmd = "lychee --no-ignore --exclude-loopback --exclude '^https://font\\.kolen\\.dev' --exclude '^https://github\\.com/ickc/font$' --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links in the rendered site via lychee" }
 linkcheck-except-429 = { cmd = "lychee --no-ignore --accept '100..=299, 429' --exclude-loopback --exclude '^https://font\\.kolen\\.dev' --exclude '^https://github\\.com/ickc/font$' --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links via lychee, accepting 429 (too many requests). Primarily for CI." }
