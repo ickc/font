@@ -14,4 +14,5 @@ metadata:
   babelfonts:
     greek: Gentium
     hebrew: Ezra SIL
-    chinese-hant: Noto Sans CJK TC
+    # Font filename stem: OSFONTDIR lets fontspec find Regular and Bold files.
+    chinese-hant: NotoSansCJKtc

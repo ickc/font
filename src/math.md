@@ -51,7 +51,8 @@ format:
     babelfonts:
       greek: Gentium
       hebrew: Ezra SIL
-      chinese-hant: Noto Sans CJK TC
+      # Font filename stem: OSFONTDIR finds the Regular and Bold files.
+      chinese-hant: NotoSansCJKtc
   typst:
     output-file: math-typst.pdf
     mainfont: TeX Gyre Schola

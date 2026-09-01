@@ -51,7 +51,8 @@ format:
     babelfonts:
       greek: Gentium
       hebrew: Ezra SIL
-      chinese-hant: Noto Sans CJK TC
+      # Font filename stem: OSFONTDIR finds the Regular and Bold files.
+      chinese-hant: NotoSansCJKtc
   typst:
     output-file: index-typst.pdf
     mainfont: TeX Gyre Schola
@@ -94,7 +95,9 @@ directly into the conventional per-user font directory
 `~/Library/Fonts` on macOS). Those parent directories—not a specially named
 project subdirectory—are what make the fonts discoverable to desktop
 applications. The Linux installer refreshes Fontconfig's cache. Pixi also sets
-`TYPST_FONT_PATHS` to that directory so Typst's lookup is explicit.
+`TYPST_FONT_PATHS` to that directory so Typst's lookup is explicit. For
+LuaLaTeX, `OSFONTDIR` exposes the same tree to fontspec; the LuaLaTeX recipes
+use the `NotoSansCJKtc` filename stem so Regular and Bold resolve reliably.
 
 Browser fonts are staged under `src/assets/`, which publishes them at
 `https://font.kolen.dev/assets/`. The setup also downloads the pinned CTAN
