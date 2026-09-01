@@ -4,8 +4,8 @@
 pandoc-output/
 src/.quarto/
 src/docs/
-src/assets/fonts/*
-!src/assets/fonts/.gitkeep
+src/assets/*
+!src/assets/fonts.css
 *.aux
 *.log
 *.out

@@ -18,8 +18,7 @@ $(OUTPUT_DIR):
 
 $(OUTPUT_DIR)/assets/fonts.css: src/assets/fonts.css | $(OUTPUT_DIR)
 	mkdir -p $(OUTPUT_DIR)/assets
-	cp src/assets/fonts.css $@
-	cp -R src/assets/fonts $(OUTPUT_DIR)/assets/
+	cp src/assets/* $(OUTPUT_DIR)/assets/
 
 $(OUTPUT_DIR)/%.html: src/%.md $(OUTPUT_DIR)/assets/fonts.css
 	$(PANDOC) $< $(COMMON) --to=html5 --mathml --css=assets/fonts.css --output=$@

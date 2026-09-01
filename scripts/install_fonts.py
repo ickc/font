@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(os.environ.get("PIXI_PROJECT_ROOT", Path(__file__).resolve().parents[1]))
 CACHE = ROOT / ".cache" / "fonts"
-WEB = ROOT / "src" / "assets" / "fonts"
+WEB = ROOT / "src" / "assets"
 
 
 def default_font_dir() -> Path:

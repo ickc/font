@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "TeX Gyre Schola";
-  src: url("fonts/texgyreschola-regular.woff2") format("woff2");
+  src: url("texgyreschola-regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: "TeX Gyre Schola";
-  src: url("fonts/texgyreschola-bold.woff2") format("woff2");
+  src: url("texgyreschola-bold.woff2") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: "TeX Gyre Schola";
-  src: url("fonts/texgyreschola-italic.woff2") format("woff2");
+  src: url("texgyreschola-italic.woff2") format("woff2");
   font-style: italic;
   font-weight: 400;
   font-display: swap;
@@ -28,7 +28,7 @@
 
 @font-face {
   font-family: "TeX Gyre Schola";
-  src: url("fonts/texgyreschola-bolditalic.woff2") format("woff2");
+  src: url("texgyreschola-bolditalic.woff2") format("woff2");
   font-style: italic;
   font-weight: 700;
   font-display: swap;
@@ -36,7 +36,7 @@
 
 @font-face {
   font-family: "TeX Gyre Schola Math";
-  src: url("fonts/texgyreschola-math.woff2") format("woff2");
+  src: url("texgyreschola-math.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -44,7 +44,7 @@
 
 @font-face {
   font-family: "Gentium";
-  src: url("fonts/Gentium-Regular.woff2") format("woff2");
+  src: url("Gentium-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -52,7 +52,7 @@
 
 @font-face {
   font-family: "Gentium";
-  src: url("fonts/Gentium-Bold.woff2") format("woff2");
+  src: url("Gentium-Bold.woff2") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -60,7 +60,7 @@
 
 @font-face {
   font-family: "Gentium";
-  src: url("fonts/Gentium-Italic.woff2") format("woff2");
+  src: url("Gentium-Italic.woff2") format("woff2");
   font-style: italic;
   font-weight: 400;
   font-display: swap;
@@ -68,7 +68,7 @@
 
 @font-face {
   font-family: "Gentium";
-  src: url("fonts/Gentium-BoldItalic.woff2") format("woff2");
+  src: url("Gentium-BoldItalic.woff2") format("woff2");
   font-style: italic;
   font-weight: 700;
   font-display: swap;
@@ -76,7 +76,7 @@
 
 @font-face {
   font-family: "Ezra SIL";
-  src: url("fonts/SILEOT.woff") format("woff");
+  src: url("SILEOT.woff") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -84,7 +84,7 @@
 
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  src: url("JetBrainsMono-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -92,7 +92,7 @@
 
 @font-face {
   font-family: "JetBrains Mono";
-  src: url("fonts/JetBrainsMono-Bold.woff2") format("woff2");
+  src: url("JetBrainsMono-Bold.woff2") format("woff2");
   font-style: normal;
   font-weight: 700;
   font-display: swap;
