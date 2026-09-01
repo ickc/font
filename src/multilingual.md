@@ -45,6 +45,7 @@ format:
     output-file: multilingual-lualatex.pdf
     filters:
       - ../config/md-links.lua
+    link-base: https://font.kolen.dev
     pdf-engine: lualatex
     latex-tinytex: false
     # .github/tl_packages is the declared package set. Left on, Quarto reacts to
@@ -64,6 +65,7 @@ format:
     output-file: multilingual-typst.pdf
     filters:
       - ../config/md-links.lua
+    link-base: https://font.kolen.dev
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math
     codefont: JetBrains Mono

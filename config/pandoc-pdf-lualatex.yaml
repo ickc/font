@@ -18,6 +18,8 @@ filters:
 # source declares its own, exactly as it does for Quarto, and pinning it here
 # would silently relabel a page written in another language.
 metadata:
+  # Absolute, because this recipe writes a PDF: see config/md-links.lua.
+  link-base: https://font.kolen.dev
   mainfont: TeX Gyre Schola
   mathfont: TeX Gyre Schola Math
   monofont: JetBrains Mono

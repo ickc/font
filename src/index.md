@@ -45,6 +45,7 @@ format:
     output-file: index-lualatex.pdf
     filters:
       - ../config/md-links.lua
+    link-base: https://font.kolen.dev
     pdf-engine: lualatex
     latex-tinytex: false
     # .github/tl_packages is the declared package set. Left on, Quarto reacts to
@@ -64,6 +65,7 @@ format:
     output-file: index-typst.pdf
     filters:
       - ../config/md-links.lua
+    link-base: https://font.kolen.dev
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math
     codefont: JetBrains Mono
@@ -142,10 +144,18 @@ Cross-document links are written as `multilingual.md`, the target that is also
 correct when reading the source on GitHub. Neither tool infers an extension, so
 a bare `multilingual` would stay bare in every output; the rewriting has to be
 explicit. Quarto does it for its own HTML and not for its PDFs, so
-`config/md-links.lua` does it for all four recipes in both pipelines, turning a
-relative `*.md` target into the `.html` page that is published beside it.
-Absolute, protocol-relative, and root-relative targets are left alone, and any
-`#anchor` is preserved.
+`config/md-links.lua` does it for all four recipes in both pipelines.
+
+What it rewrites to depends on the medium. HTML gets a relative
+`multilingual.html`, which the browser resolves against the page it came from,
+so a local build, a branch preview, and production all work from one source. PDF
+gets an absolute URL, because a PDF has no containing page for a viewer to
+resolve a relative link against: the format leaves that to an optional
+document-level base URI that browser viewers do not supply, and a relative link
+in a PDF simply does nothing when clicked. The four PDF recipes therefore set
+`link-base`, and the four HTML recipes leave it unset. Absolute,
+protocol-relative, and root-relative targets are left alone in both cases, and
+any `#anchor` is preserved.
 
 Each Quarto source declares all four outputs in its own `format` map. This map
 is Quarto-specific; vanilla Pandoc reads the shared top-level metadata and
