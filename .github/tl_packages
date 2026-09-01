@@ -7,6 +7,10 @@
 # `lualatex -recorder`, and each file the runs opened was mapped back to the
 # TeX Live package owning it.
 #
+# The derivation ran against TeX Live 2024, so names are checked against the
+# current tlnet database before being listed here: l3backend was folded into
+# l3kernel, which is why its files appear in the recording but not below.
+#
 # selnolig is deliberately absent. Pandoc's template loads it whenever `lang`
 # metadata is present, and `pixi run setup` stages a pinned CTAN copy into
 # .cache/texmf for exactly the minimal installations this list describes.
@@ -46,7 +50,6 @@ koma-script
 kvdefinekeys
 kvoptions
 kvsetkeys
-l3backend
 l3kernel
 l3packages
 latex
