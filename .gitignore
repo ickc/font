@@ -1,0 +1,12 @@
+.cache/
+.fonts/
+.quarto/
+pandoc-output/
+src/.quarto/
+src/docs/
+src/assets/*
+!src/assets/fonts.css
+*.aux
+*.log
+*.out
+*.toc

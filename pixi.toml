@@ -1,0 +1,49 @@
+[workspace]
+authors = ["Kolen Cheung <10970208+ickc@users.noreply.github.com>"]
+name = "font"
+version = "0.1.0"
+description = "Reusable font patterns."
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
+
+[dependencies]
+quarto = "*"
+lychee = "*"
+pandoc = "*"
+python = ">=3.11"
+fonttools = "*"
+brotli-python = "*"
+make = "*"
+typst = "*"
+
+[activation]
+env = { QUARTO_PORT = "8017" }
+scripts = ["scripts/activate.sh"]
+
+[tasks]
+download-tex-gyre-schola = { cmd = "python scripts/install_fonts.py tex-gyre-schola", description = "Install TeX Gyre Schola and stage its web fonts" }
+download-tex-gyre-schola-math = { cmd = "python scripts/install_fonts.py tex-gyre-schola-math", description = "Install TeX Gyre Schola Math and stage its web font" }
+download-noto-cjk-tc = { cmd = "python scripts/install_fonts.py noto-cjk-tc", description = "Install Noto Sans CJK TC (web output uses Google Fonts)" }
+download-gentium = { cmd = "python scripts/install_fonts.py gentium", description = "Install Gentium and stage its official WOFF2 files" }
+download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official WOFF file" }
+download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
+download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
+setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
+setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
+
+# Round-trips each source through pandoc so the checked-in Markdown is what
+# pandoc itself considers canonical. Only `src/*.md` is a source: `**/*.md`
+# would reach into Quarto's `.quarto` cache and its `docs` output. The three
+# table extensions are switched off because their writers reformat this
+# project's pipe tables into far wider simple or multiline tables.
+format = { cmd = "python bin/md_formatter.py src --pattern '*.md' -t 'markdown-simple_tables-multiline_tables-grid_tables'", description = "Normalise every Markdown source through pandoc" }
+format-check = { cmd = "python bin/md_formatter.py src --pattern '*.md' -t 'markdown-simple_tables-multiline_tables-grid_tables' --check", description = "Fail if any Markdown source is not formatted. Primarily for CI." }
+
+build = { cmd = "quarto render", cwd = "src", description = "Render every format declared by the Quarto sources" }
+serve = { cmd = "quarto preview src --port $QUARTO_PORT --host 0.0.0.0", description = "Preview the Quarto site without installing fonts" }
+clean = { cmd = "make clean", description = "Remove Quarto and vanilla Pandoc output" }
+
+pandoc-build = { cmd = "make all", description = "Render four vanilla Pandoc artifacts for each source document" }
+
+linkcheck = { cmd = "lychee --no-ignore --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links in the rendered site via lychee" }
+linkcheck-except-429 = { cmd = "lychee --no-ignore --accept '100..=299, 429' --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links via lychee, accepting 429 (too many requests). Primarily for CI." }

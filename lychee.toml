@@ -1,0 +1,10 @@
+# sitemap.xml and robots.txt hold nothing but absolute self-references built
+# from `site-url`. Fetching those over the network would test whatever is
+# currently deployed at font.kolen.dev rather than the output just built here --
+# and before the very first deployment it cannot pass at all, since Cloudflare
+# answers for an attached custom domain with no deployment behind it by
+# returning 522. Every internal link is already checked as a local file.
+exclude_path = [
+    "src/docs/sitemap.xml",
+    "src/docs/robots.txt",
+]

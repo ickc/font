@@ -1,0 +1,33 @@
+# Quarto only: vanilla Pandoc uses the root Makefile and config/pandoc-*.yaml.
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.md"
+  resources:
+    - assets/**
+
+website:
+  title: "Font"
+  site-url: "https://font.kolen.dev"
+  description: "Reusable multilingual font patterns for Quarto and Pandoc."
+  search:
+    location: sidebar
+    type: textbox
+  navbar:
+    left:
+      - href: index.md
+        text: Home
+      - href: multilingual.md
+        text: Multilingual
+      - href: math.md
+        text: Mathematics
+    right:
+      - icon: github
+        href: https://github.com/ickc/font
+        aria-label: GitHub
+  page-footer:
+    left: "© 2026 Kolen Cheung"
+
+execute:
+  freeze: auto

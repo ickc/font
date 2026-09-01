@@ -1,0 +1,14 @@
+# Vanilla Pandoc only: complete HTML + MathJax 4 recipe.
+# Quarto uses the `format` map and local extension in each source document.
+from: markdown
+to: html5
+standalone: true
+table-of-contents: true
+toc-depth: 3
+html-math-method:
+  method: mathjax
+  url: https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml-nofont.js
+include-in-header:
+  - ${.}/../src/_extensions/mathjax4/mathjax-schola.html
+css:
+  - assets/fonts.css
