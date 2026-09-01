@@ -61,8 +61,6 @@ format:
     include-in-header: ../config/fonts.typ
 ---
 
-# Electrodynamics from an Action to the Beginning of QED
-
 ## The unifying idea
 
 Classical electrodynamics and quantum electrodynamics are built from the same electromagnetic variable: the four-potential $A_\mu$. Its derivatives form the electromagnetic field tensor $F_{\mu\nu}$, and a gauge symmetry explains why different potentials can represent the same electric and magnetic fields.
