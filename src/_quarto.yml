@@ -19,7 +19,9 @@ website:
       - href: index.md
         text: Home
       - href: multilingual.md
+        text: Multilingual
       - href: math.md
+        text: Mathematics
     right:
       - icon: github
         href: https://github.com/ickc/font
