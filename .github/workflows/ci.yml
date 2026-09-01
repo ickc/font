@@ -54,6 +54,11 @@ jobs:
           package-file: .github/tl_packages
       - run: pixi run setup
       - run: pixi run build
+      # Quarto prints only the first few lines of a LaTeX failure, which is rarely
+      # the line that explains it.
+      - name: Show the TeX logs
+        if: failure()
+        run: tail -n 80 src/*.log
       - run: pixi run linkcheck-except-429
       # The Makefile is the other half of the pattern and shares the fonts and
       # TeX installation this job already has, so it is built here too rather
