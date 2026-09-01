@@ -77,3 +77,23 @@ uniquecounter
 upquote
 url
 xcolor
+
+# Greek and Hebrew via babel. These are not in the recording above: on a minimal
+# installation babel falls back to its own el/he locale data and never opens
+# them. They are listed because they must not be left to chance -- any fuller
+# TeX Live has babel-greek, and then greek.ldf is loaded instead of the locale.
+#
+# greek-fontenc is the one that matters. babel-greek declares no dependency on
+# it, so a TeX Live carrying babel-greek without it fails on the Greek sample --
+# and fails opaquely, because babel cannot even format its own diagnostic:
+#
+#     ! Missing \endcsname inserted.
+#     \bbl@error #1->\csname bbl@err@#1\endcsname
+#
+# The message it was trying to print is "Font support for the Greek script
+# missing. Install the greek-fontenc package". Verified locally: with all three
+# present the PDF builds with no errors and embeds exactly the same faces --
+# Gentium, Ezra SIL, Noto Sans CJK TC, TeX Gyre Schola -- as the locale path.
+babel-greek
+babel-hebrew
+greek-fontenc
