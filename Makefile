@@ -19,11 +19,17 @@ STAGED_ASSETS := $(patsubst src/assets/%,$(OUTPUT_DIR)/assets/%,$(ASSETS))
 # A recipe's configuration is one of its inputs, exactly as its source document
 # is: editing a defaults file, the Typst font rules, the link filter, or the
 # shared MathJax header has to rebuild whatever it changes.
-MATHML_CONFIG := config/pandoc-html-mathml.yaml
-MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml \
+#
+# All four recipes load the language filter, and the filter reads its generated
+# Unicode table at run time, so both are inputs to every artifact.
+AUTO_LANG := config/auto-lang.lua config/script-ranges.lua
+MATHML_CONFIG := config/pandoc-html-mathml.yaml $(AUTO_LANG)
+MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml $(AUTO_LANG) \
 	src/_extensions/mathjax4/mathjax-schola.html
-LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml config/absolute-links.lua
-TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/absolute-links.lua config/fonts.typ
+LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml $(AUTO_LANG) \
+	config/absolute-links.lua
+TYPST_CONFIG := config/pandoc-pdf-typst.yaml $(AUTO_LANG) \
+	config/absolute-links.lua config/fonts.typ
 
 .PHONY: all clean
 

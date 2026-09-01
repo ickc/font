@@ -10,6 +10,8 @@ toc-depth: 3
 format:
   html:
     output-file: index.html
+    filters:
+      - ../config/auto-lang.lua
     html-math-method: mathml
     css: assets/fonts.css
     theme:
@@ -27,6 +29,8 @@ format:
       - typst
   mathjax4-html:
     output-file: index-mathjax.html
+    filters:
+      - ../config/auto-lang.lua
     css: assets/fonts.css
     theme:
       light: flatly
@@ -44,6 +48,7 @@ format:
   pdf:
     output-file: index-lualatex.pdf
     filters:
+      - ../config/auto-lang.lua
       - ../config/absolute-links.lua
     link-base: https://font.kolen.dev
     pdf-engine: lualatex
@@ -64,6 +69,7 @@ format:
   typst:
     output-file: index-typst.pdf
     filters:
+      - ../config/auto-lang.lua
       - ../config/absolute-links.lua
     link-base: https://font.kolen.dev
     mainfont: TeX Gyre Schola
