@@ -1,0 +1,38 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "**/*.md"
+
+website:
+  title: "Font"
+  site-url: "https://font.kolen.dev"
+  description: "A reusable font pattern."
+  search:
+    location: sidebar
+    type: textbox
+  navbar:
+    left:
+      - href: index.md
+        text: Home
+    right:
+      - icon: github
+        href: https://github.com/ickc/font
+        aria-label: GitHub
+  page-footer:
+    left: "© {{< copyright-year 2026 >}} Kolen Cheung"
+
+format:
+  html:
+    theme:
+      light: [flatly]
+      dark: [darkly]
+    respect-user-color-scheme: true
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    email-obfuscation: javascript
+
+execute:
+  freeze: auto
