@@ -37,5 +37,5 @@ clean = { cmd = "make clean", description = "Remove Quarto and vanilla Pandoc ou
 
 pandoc-build = { cmd = "make all", description = "Render four vanilla Pandoc artifacts for each source document" }
 
-linkcheck = { cmd = "lychee --no-ignore --exclude-loopback --exclude '^https://font\\.kolen\\.dev' --exclude '^https://github\\.com/ickc/font$' --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links in the rendered site via lychee" }
-linkcheck-except-429 = { cmd = "lychee --no-ignore --accept '100..=299, 429' --exclude-loopback --exclude '^https://font\\.kolen\\.dev' --exclude '^https://github\\.com/ickc/font$' --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links via lychee, accepting 429 (too many requests). Primarily for CI." }
+linkcheck = { cmd = "lychee --no-ignore --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links in the rendered site via lychee" }
+linkcheck-except-429 = { cmd = "lychee --no-ignore --accept '100..=299, 429' --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links via lychee, accepting 429 (too many requests). Primarily for CI." }
