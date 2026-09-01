@@ -33,8 +33,8 @@ jobs:
       - uses: prefix-dev/setup-pixi@f00437f565399d418b0acc85936d12c1fb668347 # v0.10.1
         with:
           locked: true
-      # Fails when a file is not in the canonical form `pixi run format` produces,
-      # including a missing or stale output-file permalink.
+      # Fails when a Markdown source is not in the canonical form
+      # `pixi run format` produces.
       - run: pixi run format-check
 
   build:

@@ -66,12 +66,12 @@ English, Traditional Chinese, polytonic Greek, Biblical Hebrew, mathematics,
 and code. Every Markdown file in `src/` is rendered four ways by both Quarto
 and vanilla Pandoc:
 
-| Output | Math renderer / PDF engine |
-|---|---|
-| `name.html` | native MathML |
+| Output              | Math renderer / PDF engine  |
+|---------------------|-----------------------------|
+| `name.html`         | native MathML               |
 | `name-mathjax.html` | MathJax 4, `mathjax-schola` |
-| `name-lualatex.pdf` | LuaLaTeX |
-| `name-typst.pdf` | Typst |
+| `name-lualatex.pdf` | LuaLaTeX                    |
+| `name-typst.pdf`    | Typst                       |
 
 ## Examples
 
@@ -83,7 +83,7 @@ same four artifacts into `pandoc-output/`.
 
 ## Quick start
 
-```sh
+``` sh
 pixi run setup
 pixi run build
 pixi run pandoc-build
@@ -92,8 +92,8 @@ pixi run pandoc-build
 `setup` is an explicit, one-time machine setup. It installs desktop fonts
 directly into the conventional per-user font directory
 (`$XDG_DATA_HOME/fonts`, normally `~/.local/share/fonts`, on Linux;
-`~/Library/Fonts` on macOS). Those parent directories—not a specially named
-project subdirectory—are what make the fonts discoverable to desktop
+`~/Library/Fonts` on macOS). Those parent directories---not a specially named
+project subdirectory---are what make the fonts discoverable to desktop
 applications. The Linux installer refreshes Fontconfig's cache. Pixi also sets
 `TYPST_FONT_PATHS` to that directory so Typst's lookup is explicit. For
 LuaLaTeX, `OSFONTDIR` exposes the same tree to fontspec; the LuaLaTeX recipes
@@ -115,7 +115,7 @@ run `pixi run clean`.
 
 Use semantic language spans in otherwise ordinary Pandoc Markdown:
 
-```markdown
+``` markdown
 [καὶ εἶπεν ὁ θεός]{lang=el}
 
 [וַיֹּאמֶר אֱלֹהִים]{lang=he dir=rtl}
@@ -148,7 +148,7 @@ LaTeX's heavier `luatexja` CJK stack.
 ## Which files belong to which tool
 
 | Consumer | Files |
-|---|---|
+|------------------------------------------------------------|------------------------------------------------------------|
 | Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `scripts/activate.sh`, font and TeX setup scripts |
 | Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |

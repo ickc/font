@@ -63,10 +63,10 @@ format:
 
 # Text samples
 
-[וַיֹּ֥אמֶר אֱלֹהִים יְהִ֣י א֑וֹר וַֽיְהִי־אֽוֹר׃]{lang=he dir=rtl}
+[וַיֹּ֥אמֶר אֱלֹהִים יְהִ֣י א֑וֹר וַֽיְהִי־אֽוֹר׃]{lang="he" dir="rtl"}
 
-[καὶ εἶπεν ὁ θεός Γενηθήτω φῶς. καὶ ἐγένετο φῶς.]{lang=el}
+[καὶ εἶπεν ὁ θεός Γενηθήτω φῶς. καὶ ἐγένετο φῶς.]{lang="el"}
 
 And God said, Let there be light: and there was light.
 
-[神說：「要有光」，就有了光。]{lang=zh-Hant}
+[神說：「要有光」，就有了光。]{lang="zh-Hant"}

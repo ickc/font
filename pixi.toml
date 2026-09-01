@@ -31,6 +31,14 @@ download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
+# Round-trips each source through pandoc so the checked-in Markdown is what
+# pandoc itself considers canonical. Only `src/*.md` is a source: `**/*.md`
+# would reach into Quarto's `.quarto` cache and its `docs` output. The three
+# table extensions are switched off because their writers reformat this
+# project's pipe tables into far wider simple or multiline tables.
+format = { cmd = "python bin/md_formatter.py src --pattern '*.md' -t 'markdown-simple_tables-multiline_tables-grid_tables'", description = "Normalise every Markdown source through pandoc" }
+format-check = { cmd = "python bin/md_formatter.py src --pattern '*.md' -t 'markdown-simple_tables-multiline_tables-grid_tables' --check", description = "Fail if any Markdown source is not formatted. Primarily for CI." }
+
 build = { cmd = "quarto render", cwd = "src", description = "Render every format declared by the Quarto sources" }
 serve = { cmd = "quarto preview src --port $QUARTO_PORT --host 0.0.0.0", description = "Preview the Quarto site without installing fonts" }
 clean = { cmd = "make clean", description = "Remove Quarto and vanilla Pandoc output" }
