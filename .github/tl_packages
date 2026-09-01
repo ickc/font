@@ -1,0 +1,76 @@
+# TeX packages the LuaLaTeX recipes read. TeX Live installs its infrastructure
+# only by default, which leaves no `lualatex` on PATH; Quarto then asks tlmgr
+# for a package named `lualatex`, which does not exist, and the build fails.
+#
+# The list below is derived rather than guessed: every source in src/ was
+# compiled through both the Quarto and the vanilla Pandoc LuaLaTeX recipe under
+# `lualatex -recorder`, and each file the runs opened was mapped back to the
+# TeX Live package owning it.
+#
+# selnolig is deliberately absent. Pandoc's template loads it whenever `lang`
+# metadata is present, and `pixi run setup` stages a pinned CTAN copy into
+# .cache/texmf for exactly the minimal installations this list describes.
+
+scheme-basic
+latex-bin
+luatex
+
+amsfonts
+amsmath
+babel
+babel-english
+bigintcalc
+bitset
+bookmark
+booktabs
+caption
+ctablestack
+epstopdf-pkg
+etoolbox
+fancyvrb
+float
+fontspec
+footnotehyper
+framed
+gettitlestring
+graphics
+graphics-cfg
+graphics-def
+hycolor
+hyperref
+hyphen-base
+iftex
+infwarerr
+intcalc
+koma-script
+kvdefinekeys
+kvoptions
+kvsetkeys
+l3backend
+l3kernel
+l3packages
+latex
+latexconfig
+lm
+ltxcmds
+lua-uni-algos
+lualatex-math
+lualibs
+luaotfload
+luatexbase
+microtype
+mptopdf
+parskip
+pdfescape
+pdftexcmds
+refcount
+rerunfilecheck
+stringenc
+tex-ini-files
+tools
+unicode-data
+unicode-math
+uniquecounter
+upquote
+url
+xcolor

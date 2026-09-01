@@ -46,10 +46,19 @@ jobs:
       - uses: prefix-dev/setup-pixi@f00437f565399d418b0acc85936d12c1fb668347 # v0.10.1
         with:
           locked: true
-      - uses: TeX-Live/setup-texlive-action@v4
+      # Without a package list this installs the TeX Live infrastructure and
+      # nothing else, so `lualatex` is absent and every PDF format fails.
+      # .github/tl_packages says what the LuaLaTeX recipes actually read.
+      - uses: TeX-Live/setup-texlive-action@eb78d21f41941476d9121e3a0abcab73265c876f # v4.1.1
+        with:
+          package-file: .github/tl_packages
       - run: pixi run setup
       - run: pixi run build
       - run: pixi run linkcheck-except-429
+      # The Makefile is the other half of the pattern and shares the fonts and
+      # TeX installation this job already has, so it is built here too rather
+      # than left to be discovered broken by someone copying the repository.
+      - run: pixi run pandoc-build
       # Handed to the deploy job so the site is built exactly once.
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
