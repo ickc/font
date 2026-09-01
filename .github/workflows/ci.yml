@@ -46,6 +46,7 @@ jobs:
       - uses: prefix-dev/setup-pixi@f00437f565399d418b0acc85936d12c1fb668347 # v0.10.1
         with:
           locked: true
+      - run: pixi run setup
       - run: pixi run build
       - run: pixi run linkcheck-except-429
       # Handed to the deploy job so the site is built exactly once.
