@@ -45,6 +45,11 @@ format:
     output-file: math-lualatex.pdf
     pdf-engine: lualatex
     latex-tinytex: false
+    # .github/tl_packages is the declared package set. Left on, Quarto reacts to
+    # a log warning by installing babel-greek, whose greek.ldf then collides with
+    # the `babelfont` setup below; without it babel uses its own el locale, which
+    # is what every working build here has used.
+    latex-auto-install: false
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math
     monofont: JetBrains Mono
