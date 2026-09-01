@@ -19,11 +19,11 @@ STAGED_ASSETS := $(patsubst src/assets/%,$(OUTPUT_DIR)/assets/%,$(ASSETS))
 # A recipe's configuration is one of its inputs, exactly as its source document
 # is: editing a defaults file, the Typst font rules, the link filter, or the
 # shared MathJax header has to rebuild whatever it changes.
-MATHML_CONFIG := config/pandoc-html-mathml.yaml config/md-links.lua
-MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml config/md-links.lua \
+MATHML_CONFIG := config/pandoc-html-mathml.yaml
+MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml \
 	src/_extensions/mathjax4/mathjax-schola.html
-LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml config/md-links.lua
-TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/md-links.lua config/fonts.typ
+LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml config/absolute-links.lua
+TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/absolute-links.lua config/fonts.typ
 
 .PHONY: all clean
 

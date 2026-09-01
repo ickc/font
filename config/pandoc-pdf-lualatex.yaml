@@ -6,19 +6,17 @@ standalone: true
 table-of-contents: true
 toc-depth: 3
 pdf-engine: lualatex
-# Rewrites relative `*.md` link targets to `.html`, so a cross-document link
-# points at the published page rather than at a Markdown source this recipe
-# never emits. The HTML recipes do the same; Quarto rewrites its own HTML but
-# not its PDFs, which is why this belongs on all four.
+# Expands root-relative link targets against `link-base` below. Only the PDF
+# recipes need this: a root-relative target already resolves in HTML.
 filters:
-  - ${.}/md-links.lua
+  - ${.}/absolute-links.lua
 # A defaults file's `metadata:` overrides the document's own front matter
 # rather than filling a gap in it, so only what belongs to the recipe goes
 # here. The fonts do: they are what this recipe is. `lang` does not -- each
 # source declares its own, exactly as it does for Quarto, and pinning it here
 # would silently relabel a page written in another language.
 metadata:
-  # Absolute, because this recipe writes a PDF: see config/md-links.lua.
+  # The site these PDFs are published on: see config/absolute-links.lua.
   link-base: https://font.kolen.dev
   mainfont: TeX Gyre Schola
   mathfont: TeX Gyre Schola Math

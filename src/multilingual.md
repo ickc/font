@@ -44,7 +44,7 @@ format:
   pdf:
     output-file: multilingual-lualatex.pdf
     filters:
-      - ../config/md-links.lua
+      - ../config/absolute-links.lua
     link-base: https://font.kolen.dev
     pdf-engine: lualatex
     latex-tinytex: false
@@ -64,7 +64,7 @@ format:
   typst:
     output-file: multilingual-typst.pdf
     filters:
-      - ../config/md-links.lua
+      - ../config/absolute-links.lua
     link-base: https://font.kolen.dev
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math

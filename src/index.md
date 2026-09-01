@@ -44,7 +44,7 @@ format:
   pdf:
     output-file: index-lualatex.pdf
     filters:
-      - ../config/md-links.lua
+      - ../config/absolute-links.lua
     link-base: https://font.kolen.dev
     pdf-engine: lualatex
     latex-tinytex: false
@@ -64,7 +64,7 @@ format:
   typst:
     output-file: index-typst.pdf
     filters:
-      - ../config/md-links.lua
+      - ../config/absolute-links.lua
     link-base: https://font.kolen.dev
     mainfont: TeX Gyre Schola
     mathfont: TeX Gyre Schola Math
@@ -86,8 +86,8 @@ and vanilla Pandoc:
 
 ## Examples
 
-- [Multilingual text samples](multilingual.md)
-- [Mathematics sample](math.md)
+- [Multilingual text samples](/multilingual.html)
+- [Mathematics sample](/math.html)
 
 Quarto publishes into `src/docs/`. The independent Makefile publishes the
 same four artifacts into `pandoc-output/`.
@@ -140,22 +140,27 @@ attributes, so `config/fonts.typ` selects the three non-Latin fonts by Unicode
 script coverage. This is a Typst header rule, not an AST filter; font selection
 needs no Lua filter.
 
-Cross-document links are written as `multilingual.md`, the target that is also
-correct when reading the source on GitHub. Neither tool infers an extension, so
-a bare `multilingual` would stay bare in every output; the rewriting has to be
-explicit. Quarto does it for its own HTML and not for its PDFs, so
-`config/md-links.lua` does it for all four recipes in both pipelines.
+Cross-document links are written root-relative and pointing at the published
+page: `/math.html`, not `math.md`. Neither tool infers an extension or a
+directory, so the target in the source is the target in the output, and a
+root-relative one is already correct in HTML on whatever origin serves it --
+production and every branch preview each have their own. The four HTML recipes
+therefore need nothing at all. Quarto additionally normalises `/math.html` to
+`./math.html`, which also makes its HTML browsable straight off the filesystem.
 
-What it rewrites to depends on the medium. HTML gets a relative
-`multilingual.html`, which the browser resolves against the page it came from,
-so a local build, a branch preview, and production all work from one source. PDF
-gets an absolute URL, because a PDF has no containing page for a viewer to
-resolve a relative link against: the format leaves that to an optional
-document-level base URI that browser viewers do not supply, and a relative link
-in a PDF simply does nothing when clicked. The four PDF recipes therefore set
-`link-base`, and the four HTML recipes leave it unset. Absolute,
-protocol-relative, and root-relative targets are left alone in both cases, and
-any `#anchor` is preserved.
+PDF is the exception, and the only reason `config/absolute-links.lua` exists. A
+PDF has no containing page, so a viewer has nothing to resolve a root-relative
+URI against: the format leaves that to an optional document-level base URI which
+browser viewers do not supply, and such a link is inert when clicked. The four
+PDF recipes therefore load the filter and set `link-base` to the site the PDFs
+are published on, and every root-relative target is expanded against it.
+Absolute and protocol-relative targets are left alone.
+
+One consequence worth knowing: the Makefile's HTML output keeps the
+root-relative form, so `pandoc-output/index.html` navigates correctly when
+served from a site root but not when opened as a local file. Those artifacts
+exist to demonstrate the four recipes, and the site Quarto builds is the one
+that gets published.
 
 Each Quarto source declares all four outputs in its own `format` map. This map
 is Quarto-specific; vanilla Pandoc reads the shared top-level metadata and
@@ -182,7 +187,7 @@ it for Quarto.
 
 | Consumer | Files |
 |------------------------------------------------------------|------------------------------------------------------------|
-| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `config/md-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
+| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
 | Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
 

@@ -7,9 +7,5 @@ table-of-contents: true
 toc-depth: 3
 html-math-method:
   method: mathml
-# Rewrites relative `*.md` link targets to the `.html` files this recipe
-# writes, matching what Quarto does with the same sources.
-filters:
-  - ${.}/md-links.lua
 css:
   - assets/fonts.css
