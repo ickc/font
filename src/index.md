@@ -168,7 +168,10 @@ Reserve names ending in `-mathjax`, `-lualatex`, and `-typst` for generated
 files.
 
 `src/index.md` is the canonical project introduction and site homepage. The
-root `README.md` symlink makes the same source the repository README.
+root `README.md` is a short pointer to it and to the rendered site. It is a
+real file rather than a symlink to this one: the links here are relative to
+`src/`, and GitHub resolves a symlinked README's relative links from the
+repository root, where those targets do not exist.
 
 ## Font sources and licensing
 
