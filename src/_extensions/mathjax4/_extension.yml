@@ -1,3 +1,4 @@
+# Quarto only: vanilla Pandoc configures MathJax in its defaults file.
 title: MathJax 4 HTML with TeX Gyre Schola Math
 author: Kolen Cheung
 version: 0.1.0

@@ -1,0 +1,13 @@
+# Vanilla Pandoc only: complete HTML + MathML recipe.
+# Quarto uses the `format` map in each source document instead.
+from: markdown
+to: html5
+standalone: true
+table-of-contents: true
+toc-depth: 3
+metadata:
+  lang: en
+html-math-method:
+  method: mathml
+css:
+  - assets/fonts.css

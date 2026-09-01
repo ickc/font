@@ -1,0 +1,15 @@
+# Vanilla Pandoc only: complete Typst PDF recipe.
+# Quarto uses the `format.typst` map in each source document instead.
+from: markdown
+to: pdf
+standalone: true
+table-of-contents: true
+toc-depth: 3
+pdf-engine: typst
+metadata:
+  lang: en
+  mainfont: TeX Gyre Schola
+  mathfont: TeX Gyre Schola Math
+  codefont: JetBrains Mono
+include-in-header:
+  - ${.}/fonts.typ

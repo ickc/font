@@ -1,8 +1,12 @@
 ---
+# Metadata used by both Quarto and vanilla Pandoc.
 title: "Electrodynamics from an Action to the Beginning of QED"
 lang: en
 toc: true
 toc-depth: 3
+
+# Quarto-only render recipes. Vanilla Pandoc ignores this `format` map and uses
+# the four explicit defaults files under ../config/ through the root Makefile.
 format:
   html:
     output-file: math.html

@@ -1,8 +1,0 @@
-pdf-engine: lualatex
-mainfont: TeX Gyre Schola
-mathfont: TeX Gyre Schola Math
-monofont: JetBrains Mono
-babelfonts:
-  greek: Gentium
-  hebrew: Ezra SIL
-  chinese-hant: Noto Sans CJK TC

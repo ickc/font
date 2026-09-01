@@ -26,9 +26,10 @@ def default_font_dir() -> Path:
     if configured:
         return Path(configured).expanduser()
     if platform.system() == "Darwin":
-        return Path.home() / "Library" / "Fonts" / "font-kolen-dev"
+        return Path.home() / "Library" / "Fonts"
     if platform.system() == "Linux":
-        return Path.home() / ".local" / "share" / "fonts" / "font-kolen-dev"
+        data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
+        return data_home / "fonts"
     raise SystemExit("Only macOS and Linux are supported")
 
 

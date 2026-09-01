@@ -1,3 +1,4 @@
+// Shared by Quarto and vanilla Pandoc for their Typst PDF recipes.
 // Pandoc 3.8's Typst writer does not preserve Span attributes. Restrict each
 // family to its Unicode script so TeX Gyre Schola remains the Latin face.
 #show regex("\\p{Script=Greek}"): set text(font: "Gentium")

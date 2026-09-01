@@ -1,8 +1,12 @@
 ---
+# Metadata used by both Quarto and vanilla Pandoc.
 title: "Reusable multilingual Pandoc + Quarto documents"
 lang: en
 toc: true
 toc-depth: 3
+
+# Quarto-only render recipes. Vanilla Pandoc ignores this `format` map and uses
+# the four explicit defaults files under ../config/ through the root Makefile.
 format:
   html:
     output-file: index.html
@@ -84,15 +88,20 @@ pixi run build
 pixi run pandoc-build
 ```
 
-`setup` is an explicit, one-time machine setup. It installs desktop fonts into
-the conventional per-user font
-directory (`~/.local/share/fonts/font-kolen-dev` on Linux or
-`~/Library/Fonts/font-kolen-dev` on macOS) and stages browser fonts directly
-under `src/assets/`, which publishes them at
-`https://font.kolen.dev/assets/`. It also stages the small `selnolig` package
-needed by minimal TeX Live installations. Pixi sets `TYPST_FONT_PATHS` to the
-per-user font directory, so Typst does not depend on platform font-cache
-behaviour.
+`setup` is an explicit, one-time machine setup. It installs desktop fonts
+directly into the conventional per-user font directory
+(`$XDG_DATA_HOME/fonts`, normally `~/.local/share/fonts`, on Linux;
+`~/Library/Fonts` on macOS). Those parent directories—not a specially named
+project subdirectory—are what make the fonts discoverable to desktop
+applications. The Linux installer refreshes Fontconfig's cache. Pixi also sets
+`TYPST_FONT_PATHS` to that directory so Typst's lookup is explicit.
+
+Browser fonts are staged under `src/assets/`, which publishes them at
+`https://font.kolen.dev/assets/`. The setup also downloads the pinned CTAN
+`selnolig` package into `.cache/texmf`. Pandoc's LuaLaTeX template loads that
+package when `lang` metadata is present, but minimal TeX Live installations may
+not provide it. `scripts/activate.sh` prepends the project-local tree to TeX's
+`.sty` and Lua-module searches while retaining their normal system paths.
 
 `build`, `pandoc-build`, and `serve` never install anything. If setup has not
 been run, rendering fails at the missing font or TeX dependency. To preview the
@@ -117,7 +126,9 @@ attributes, so `config/fonts.typ` selects the three non-Latin fonts by Unicode
 script coverage. This is a Typst header rule, not an AST filter; no Lua filter
 is required.
 
-Each Quarto source declares all four outputs in its own `format` map. The
+Each Quarto source declares all four outputs in its own `format` map. This map
+is Quarto-specific; vanilla Pandoc reads the shared top-level metadata and
+ignores `format`. The
 `mathjax4-html` key comes from the small local extension under
 `src/_extensions/mathjax4/`; it exists solely so the source can list two HTML
 formats without duplicate YAML keys. `output-file` gives each format a stable
@@ -125,17 +136,33 @@ name, and format-specific `format-links` generate the sibling-download links
 in both HTML variants.
 
 LuaLaTeX uses Pandoc's `babelfonts` map, while Typst uses its `codefont`
-variable and Unicode coverage rules. The matching vanilla-Pandoc defaults live
-under `config/`. This retains one Markdown source without loading LaTeX's
-heavier `luatexja` CJK stack.
+variable and Unicode coverage rules. The four matching vanilla-Pandoc defaults
+under `config/` are deliberately self-contained: each repeats its reader,
+writer, table-of-contents, language, and renderer/engine settings so it can be
+copied as a complete recipe. This retains one Markdown source without loading
+LaTeX's heavier `luatexja` CJK stack.
+
+## Which files belong to which tool
+
+| Consumer | Files |
+|---|---|
+| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `scripts/activate.sh`, font and TeX setup scripts |
+| Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
+| Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
+
+`src/_extensions/mathjax4/mathjax-schola.html` is shared: Quarto reaches it
+through the extension and the vanilla-Pandoc MathJax defaults file includes it
+directly.
 
 ## Adding documents
 
-Add another `.md` file directly under `src/`, copy the `format` and
+Add another `.md` file directly under `src/`, copy the full Quarto `format` and
 `format-links` maps from `src/index.md`, and adjust its four `output-file`
-basenames. Both `pixi run build` and the Makefile discover source files
-automatically. Reserve names ending in `-mathjax`, `-lualatex`, and `-typst`
-for generated files.
+basenames. Do not factor the repeated map into shared metadata: keeping each
+source self-contained makes every Quarto combination visible at the point of
+use. Both `pixi run build` and the Makefile discover source files automatically.
+Reserve names ending in `-mathjax`, `-lualatex`, and `-typst` for generated
+files.
 
 `src/index.md` is the canonical project introduction and site homepage. The
 root `README.md` symlink makes the same source the repository README.
@@ -162,5 +189,7 @@ Generated font binaries and documents are ignored by Git. Run `pixi run setup`
 once on a new authoring or deployment machine; subsequent builds reuse the
 installed and staged files.
 
-LuaLaTeX itself must be installed by the host TeX Live distribution. The build
-does not attempt to replace the operating system's TeX Live installation.
+LuaLaTeX itself must be installed by the host TeX Live distribution. Quarto's
+`latex-tinytex: false` selects that host installation, and vanilla Pandoc finds
+`lualatex` through `PATH`; no engine-selection wrapper is needed. The build does
+not attempt to replace the operating system's TeX Live installation.

@@ -1,3 +1,4 @@
+# Quarto only: vanilla Pandoc uses the root Makefile and config/pandoc-*.yaml.
 project:
   type: website
   output-dir: docs

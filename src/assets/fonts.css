@@ -1,4 +1,6 @@
-/* Noto's official Google Fonts web family. The API returns unicode-ranged
+/* Shared by Quarto and vanilla Pandoc for both HTML recipes.
+
+   Noto's official Google Fonts web family. The API returns unicode-ranged
    WOFF2 slices, so browsers only fetch the Traditional Chinese ranges used. */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap");
 
