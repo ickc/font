@@ -28,6 +28,7 @@ download-gentium = { cmd = "python scripts/install_fonts.py gentium", descriptio
 download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official WOFF file" }
 download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
 download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
+generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate config/script-ranges.lua from the Unicode Character Database" }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
