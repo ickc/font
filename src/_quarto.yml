@@ -2,12 +2,14 @@ project:
   type: website
   output-dir: docs
   render:
-    - "**/*.md"
+    - "*.md"
+  resources:
+    - assets/fonts/**
 
 website:
   title: "Font"
   site-url: "https://font.kolen.dev"
-  description: "A reusable font pattern."
+  description: "Reusable multilingual font patterns for Quarto and Pandoc."
   search:
     location: sidebar
     type: textbox
@@ -20,19 +22,21 @@ website:
         href: https://github.com/ickc/font
         aria-label: GitHub
   page-footer:
-    left: "© {{< copyright-year 2026 >}} Kolen Cheung"
+    left: "© 2026 Kolen Cheung"
 
 format:
   html:
     theme:
-      light: [flatly]
-      dark: [darkly]
+      light: flatly
+      dark: darkly
     respect-user-color-scheme: true
     toc: true
     toc-depth: 3
     code-copy: true
     code-overflow: wrap
     email-obfuscation: javascript
+    html-math-method: mathml
+    css: assets/fonts.css
 
 execute:
   freeze: auto

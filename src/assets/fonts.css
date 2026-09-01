@@ -1,0 +1,106 @@
+/* Noto's official Google Fonts web family. The API returns unicode-ranged
+   WOFF2 slices, so browsers only fetch the Traditional Chinese ranges used. */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap");
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("fonts/texgyreschola-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("fonts/texgyreschola-bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("fonts/texgyreschola-italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("fonts/texgyreschola-bolditalic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola Math";
+  src: url("fonts/texgyreschola-math.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* SBL's EULA prohibits distributing converted/modified versions. These two
+   sources are the original, unmodified TTF downloads. */
+@font-face {
+  font-family: "SBL Greek";
+  src: url("fonts/SBL_grk.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SBL Hebrew";
+  src: url("fonts/SBL_Hbrw.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("fonts/JetBrainsMono-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --font-body: "TeX Gyre Schola", serif;
+  --font-code: "JetBrains Mono", monospace;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+:lang(el) {
+  font-family: "SBL Greek", serif;
+}
+
+:lang(he) {
+  font-family: "SBL Hebrew", serif;
+}
+
+:lang(zh), :lang(zh-Hant) {
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-code);
+}
+
+math {
+  font-family: "TeX Gyre Schola Math", math;
+}

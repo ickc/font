@@ -1,0 +1,4 @@
+pdf-engine: typst
+mainfont: TeX Gyre Schola
+mathfont: TeX Gyre Schola Math
+codefont: JetBrains Mono
