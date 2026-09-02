@@ -59,6 +59,11 @@ jobs:
         with:
           package-file: .github/tl_packages
       - run: pixi run setup
+      # src/mermaid-quarto.qmd draws its diagrams in a headless browser Quarto
+      # installs itself, and without it that page stops the whole render at
+      # "Chrome not found". This is the cost of the Quarto-native pattern; the
+      # Lua filter pattern beside it needs no browser here.
+      - run: pixi run setup-chrome
       - run: pixi run build
       # Quarto prints only the first few lines of a LaTeX failure, which is rarely
       # the line that explains it.
