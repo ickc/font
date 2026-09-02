@@ -4,6 +4,12 @@ project:
   output-dir: docs
   render:
     - "*.md"
+  # LuaLaTeX reads a PDF where every other writer reads the checked-in SVG, and
+  # that PDF is derived rather than committed. This is what derives it, and it
+  # is a project hook rather than a pixi task so that `quarto preview` and a
+  # bare `quarto render` get it too. It needs only typst, and does nothing at
+  # all when the PDFs are already current. See scripts/render_diagrams.py.
+  pre-render: python ../scripts/render_diagrams.py --pdfs
   resources:
     - assets/**
     - _headers

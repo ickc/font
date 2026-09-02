@@ -19,11 +19,27 @@ STAGED_ASSETS := $(patsubst src/assets/%,$(OUTPUT_DIR)/assets/%,$(ASSETS))
 # A recipe's configuration is one of its inputs, exactly as its source document
 # is: editing a defaults file, the Typst font rules, the link filter, or the
 # shared MathJax header has to rebuild whatever it changes.
-MATHML_CONFIG := config/pandoc-html-mathml.yaml
-MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml \
+# `mermaid.lua` is in every recipe's configuration, and so are the pictures it
+# substitutes: a re-drawn diagram is a new input to each of the four, exactly as
+# an edited source document is. The wildcard is re-expanded on every run, so a
+# diagram drawn since the last build becomes a prerequisite as soon as it exists
+# -- and one that has *not* been drawn is a missing file the filter names, not a
+# silently stale drawing. See config/mermaid.lua.
+#
+# Only the SVGs are checked in, and they are what all four recipes wait on. The
+# PDF that LuaLaTeX reads instead is derived from its SVG by the rule below, so
+# it belongs to that recipe alone -- and it is named by transforming the SVG list
+# rather than by a second wildcard, because a wildcard cannot see a file make has
+# not derived yet.
+DIAGRAM_SVGS := $(wildcard src/diagrams/*.svg)
+DIAGRAM_PDFS := $(patsubst %.svg,%.pdf,$(DIAGRAM_SVGS))
+MERMAID_CONFIG := config/mermaid.lua $(DIAGRAM_SVGS)
+
+MATHML_CONFIG := config/pandoc-html-mathml.yaml $(MERMAID_CONFIG)
+MATHJAX_CONFIG := config/pandoc-html-mathjax.yaml $(MERMAID_CONFIG) \
 	src/_extensions/mathjax4/mathjax-schola.html
-LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml config/absolute-links.lua
-TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/absolute-links.lua config/fonts.typ
+LUALATEX_CONFIG := config/pandoc-pdf-lualatex.yaml config/absolute-links.lua $(MERMAID_CONFIG) $(DIAGRAM_PDFS)
+TYPST_CONFIG := config/pandoc-pdf-typst.yaml config/absolute-links.lua config/fonts.typ $(MERMAID_CONFIG)
 
 .PHONY: all clean
 
@@ -53,6 +69,17 @@ $(OUTPUT_DIR)/%-lualatex.pdf: src/%.md $(LUALATEX_CONFIG) | $(OUTPUT_DIR)
 $(OUTPUT_DIR)/%-typst.pdf: src/%.md $(TYPST_CONFIG) | $(OUTPUT_DIR)
 	$(PANDOC) $< --defaults=config/pandoc-pdf-typst.yaml --output=$@
 
+# LuaLaTeX is the one writer that cannot be handed the SVG: \includegraphics
+# reads none without --shell-escape and an Inkscape installation. It gets this
+# instead, derived from the checked-in SVG by typst -- already pinned here as a
+# PDF engine, so no dependency is added and the two pictures cannot disagree.
+# That derivation is why these PDFs are gitignored rather than committed: it
+# needs neither a browser nor a network, which is the entire reason the SVGs
+# beside them are committed. See scripts/render_diagrams.py.
+src/diagrams/%.pdf: src/diagrams/%.svg
+	python scripts/render_diagrams.py --pdf $<
+
 clean:
 	rm -rf pandoc-output src/docs src/.quarto src/_freeze
 	rm -f src/*-mathjax.html src/*-lualatex.pdf src/*-typst.pdf src/*.tex src/*.log
+	rm -f src/diagrams/*.pdf

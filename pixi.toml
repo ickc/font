@@ -29,6 +29,11 @@ download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", descript
 download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
 download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
 generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate bin/script-ranges.lua from the Unicode Character Database" }
+# Only the SVG each of these draws is checked in. The PDF that LuaLaTeX reads is
+# derived from it by typst -- by the Makefile's pattern rule on one side and
+# `_quarto.yml`'s `pre-render` on the other -- so it needs no task here.
+render-diagrams = { cmd = "python scripts/render_diagrams.py", description = "Draw each mermaid block into src/diagrams/ (needs npx and Chrome)" }
+render-diagrams-check = { cmd = "python scripts/render_diagrams.py --check", description = "Fail if a drawn diagram is missing or orphaned. Primarily for CI." }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 

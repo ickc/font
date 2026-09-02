@@ -7,5 +7,10 @@ table-of-contents: true
 toc-depth: 3
 html-math-method:
   method: mathml
+# Turns each fenced mermaid block into the picture this writer can read -- for
+# HTML, the SVG inlined into the page, so that its labels resolve against the
+# same @font-face rules the body text does. See config/mermaid.lua.
+filters:
+  - ${.}/mermaid.lua
 css:
   - assets/fonts.css

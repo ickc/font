@@ -7,6 +7,11 @@ src/docs/
 src/assets/*
 !src/assets/faces.css
 !src/assets/fonts.css
+# The SVG beside it is checked in and this is not, because only the SVG costs
+# anything to make: drawing one needs a browser and an npm fetch, while the PDF
+# LuaLaTeX reads is derived from it by typst, which is already pinned here.
+# See scripts/render_diagrams.py.
+src/diagrams/*.pdf
 *.aux
 *.log
 *.out
