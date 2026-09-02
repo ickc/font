@@ -31,10 +31,26 @@
 # year. Matching disjointly is what makes each file's lifetime the one written
 # down here.
 #
-# Anything without a rule keeps the Pages default of four hours, which is why
-# the licence .txt files are absent rather than listed: they are tiny, rarely
-# fetched, and must never be stuck stale for a year. That fallback is also what
-# makes a new asset type fail safe -- too short, never unbustable.
+# Anything without a rule keeps the Pages default, which is
+# `public, max-age=0, must-revalidate` -- revalidated every time, never stale.
+# That is why the licence .txt files are absent rather than listed: they are
+# tiny, rarely fetched, and must not be stuck for a year. It is also what makes
+# a new asset type fail safe -- too short, never unbustable.
+#
+# One number below is not honoured on font.kolen.dev, and the difference is not
+# in this repository. Cloudflare serves whichever is higher, the origin
+# `max-age` or the zone's Browser Cache TTL, and that zone is on Cloudflare's
+# four-hour default. The year survives, being higher. The hour is raised to
+# four. It stays an hour here because it is the right number, because a fork
+# deploying anywhere else gets it, and because the fix is one zone setting --
+# Caching -> Configuration -> Browser Cache TTL -> Respect Existing Headers --
+# rather than a worse value written down to match a setting.
+#
+# Measured rather than assumed, though not end to end: font.kolen.dev returns
+# max-age=14400 for a .css whose Pages origin sends max-age=0, which is the
+# zone raising it, while .txt passes through at max-age=0 because it is not a
+# default-cached extension. The hour's fate follows from the same rule and
+# cannot be observed directly until this reaches production.
 
 /assets/*.woff2
   Cache-Control: public, max-age=31536000, immutable

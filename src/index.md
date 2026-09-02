@@ -431,7 +431,15 @@ The stylesheets are the moving part, and they are deliberately the cheap one:
 `max-age=3600, must-revalidate` on about 3 KB, against roughly 2 MB of faces
 that a returning visitor now never refetches. Everything a consumer can be told
 later --- a new face, a renamed file, a family that goes away --- travels
-through them, so an hour is the longest anything here takes to propagate.
+through them.
+
+Plan on four hours for that, not one. Cloudflare serves whichever is higher,
+the origin's `max-age` or the zone's Browser Cache TTL, and this zone is on
+Cloudflare's four-hour default: the faces keep their year, and anything asking
+for less than four hours is raised to four. `src/_headers` asks for an hour
+because that is the right number and because a copy of this site deployed
+anywhere else gets it, but on `font.kolen.dev` it is a zone setting rather than
+a file that decides.
 
 What that does not give you is a version to pin. The stylesheets are the same
 two URLs for everyone, so a face added or dropped reaches your site within the
