@@ -97,7 +97,7 @@ that were typed as plain text. Nothing runs at render time: what the four
 recipes read is the ordinary Pandoc markup checked in here, which is also what
 a reviewer reads in the diff.
 
-[וַיֹּ֥אמֶר אֱלֹהִים יְהִ֣י א֑וֹר וַֽיְהִי־אֽוֹר׃]{dir="rtl" lang="he"}
+[וַיֹּ֥אמֶר אֱלֹהִים יְהִ֣י א֑וֹר וַֽיְהִי־אֽוֹר׃]{lang="he" dir="rtl"}
 
 [καὶ εἶπεν ὁ θεός Γενηθήτω φῶς. καὶ ἐγένετο φῶς]{lang="el"}.
 
@@ -106,7 +106,7 @@ And God said, Let there be light: and there was light.
 [神說：「要有光」，就有了光。]{lang="zh-Hant"}
 
 Runs inside a sentence are found the same way: [神說]{lang="zh-Hant"} was rendered
-[καὶ εἶπεν ὁ θεός]{lang="el"} by the Septuagint, from the Hebrew [וַיֹּ֥אמֶר אֱלֹהִים]{dir="rtl" lang="he"}.
+[καὶ εἶπεν ὁ θεός]{lang="el"} by the Septuagint, from the Hebrew [וַיֹּ֥אמֶר אֱלֹהִים]{lang="he" dir="rtl"}.
 
 # Overriding the map
 

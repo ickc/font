@@ -186,9 +186,12 @@ local function split(text)
   return merged
 end
 
+-- A list of pairs rather than a Lua table: pandoc writes the attributes in the
+-- order it is given them, and `pairs` over a table is free to hand them over in
+-- either order, which would make the formatter's own output unstable.
 local function span(script, inlines)
-  local attributes = { lang = languages[script] }
-  if unicode.rtl[script] then attributes.dir = "rtl" end
+  local attributes = { { "lang", languages[script] } }
+  if unicode.rtl[script] then attributes[#attributes + 1] = { "dir", "rtl" } end
   return pandoc.Span(inlines, pandoc.Attr("", {}, attributes))
 end
 
