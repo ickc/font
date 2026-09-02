@@ -6,8 +6,8 @@ file in `src/` is rendered four ways — MathML HTML, MathJax 4 HTML, LuaLaTeX P
 and Typst PDF — by both Quarto and vanilla Pandoc, from one set of sources.
 
 **<https://font.kolen.dev>** is the rendered site, and is the place to read this.
-It is where the pattern demonstrates itself: the [multilingual][] and
-[mathematics][] samples are the same Markdown shown in all four outputs.
+It is where the pattern demonstrates itself: the [multilingual][], [mathematics][]
+and [diagram][] samples are the same Markdown shown in all four outputs.
 
 The deployed stylesheets are a supported distribution: another site may link
 `https://font.kolen.dev/assets/faces.css` rather than vendor the faces. What is
@@ -26,3 +26,4 @@ pixi run serve   # preview it
 
 [multilingual]: https://font.kolen.dev/multilingual.html
 [mathematics]: https://font.kolen.dev/math.html
+[diagram]: https://font.kolen.dev/mermaid.html
