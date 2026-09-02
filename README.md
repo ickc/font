@@ -9,6 +9,11 @@ and Typst PDF — by both Quarto and vanilla Pandoc, from one set of sources.
 It is where the pattern demonstrates itself: the [multilingual][] and
 [mathematics][] samples are the same Markdown shown in all four outputs.
 
+The deployed stylesheets are a supported distribution: another site may link
+`https://font.kolen.dev/assets/faces.css` rather than vendor the faces. What is
+public and what it promises is [documented on the
+site](https://font.kolen.dev/index.html#using-these-fonts-on-another-site).
+
 The full introduction — how the two pipelines are wired, which file belongs to
 which tool, where each font comes from, and how to add a document — is
 [`src/index.md`](src/index.md), which renders as the site homepage.

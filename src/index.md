@@ -354,3 +354,86 @@ LuaLaTeX itself must be installed by the host TeX Live distribution. Quarto's
 `latex-tinytex: false` selects that host installation, and vanilla Pandoc finds
 `lualatex` through `PATH`; no engine-selection wrapper is needed. The build does
 not attempt to replace the operating system's TeX Live installation.
+
+## Using these fonts on another site
+
+The stylesheets this site publishes are a supported distribution, not only a
+demo of one. Another site may link them directly, and
+[hpc.kolen.dev](https://hpc.kolen.dev) does. Cloudflare Pages answers with
+`access-control-allow-origin: *`, which is what a cross-origin font fetch
+needs, and the `url()` references inside the stylesheets are relative, so the
+`.woff2` files follow from this origin without anything being vendored.
+
+Two URLs are public:
+
+| URL | Contents |
+|------------------------------------------------------------|------------------------------------------------------------|
+| `https://font.kolen.dev/assets/faces.css` | Every `@font-face`, and the two custom properties below. Nothing else. |
+| `https://font.kolen.dev/assets/fonts.css` | `faces.css`, the Google Fonts import for Noto Sans TC, and this site's own element rules. |
+
+Link `faces.css`. `fonts.css` additionally asserts what `body`, `code` and
+`math` are set in, which is right for this site and wrong for a theme that has
+already decided. It also reaches Google Fonts on every page load, from a third
+origin, which an English-only site gets nothing for.
+
+``` html
+<link rel="preconnect" href="https://font.kolen.dev" crossorigin>
+<link rel="stylesheet" href="https://font.kolen.dev/assets/faces.css">
+```
+
+The `preconnect` is worth the line: a consumer's first font byte is otherwise
+two round trips behind its own stylesheet. `crossorigin` is required on it,
+because a font fetch is anonymous-mode CORS and a preconnect without it warms
+the wrong connection.
+
+### The names a consumer has to repeat
+
+Declaring the faces is not using them. These are the family names to name in
+your own theme --- `TeX Gyre Schola`, `TeX Gyre Schola Math`, `Gentium`,
+`Ezra SIL`, `JetBrains Mono`, and, if you add the Google Fonts import yourself,
+`Noto Sans TC`.
+
+In a Quarto or Bootstrap site they belong in `$font-family-base` and
+`$font-family-monospace`, not in a `body` rule: those variables are what
+generate the navbar, sidebar, headings, buttons and syntax highlighter too, and
+a `body` rule reaches none of them.
+
+`faces.css` also exports `--font-body` and `--font-code`. Reading one costs you
+the fallback stack: an undefined `var()` is invalid at computed-value time, so
+if this origin is ever unreachable the whole declaration is dropped rather than
+falling through to the generic family beside it. Name the families directly
+where that matters.
+
+Every face is declared `font-display: swap`, so text is readable in a fallback
+while the face arrives rather than invisible. That is a promise, not an
+accident of the current file.
+
+### What is stable, and what is not
+
+The two paths above, the family names they declare, and the two custom property
+names will not be renamed or removed. The font files behind them may be
+replaced in place --- a new upstream release, a better compression --- keeping
+the same family names and metrics.
+
+There is no way to pin a version. The assets are served from unversioned paths
+as `cache-control: public, max-age=14400, must-revalidate`, so a replaced file
+reaches every consuming site within four hours. A site that cannot accept that
+should copy `src/assets/` into its own tree instead; the licence files are
+staged beside the fonts precisely so that the directory is self-contained.
+
+### What linking obliges you to do
+
+The OFL and the GUST Font License both govern copying, modifying and bundling
+the font software. A `<link>` to this origin does none of those: the copy the
+visitor's browser receives comes from here, and the licence files are published
+here beside it, at `https://font.kolen.dev/assets/`, precisely so that the party
+doing the distributing is the one carrying them.
+
+Copying `src/assets/` makes you that party instead, and then the licence files
+come with it --- `Gentium-OFL.txt`, `EzraSIL-Licenses.txt`,
+`JetBrainsMono-OFL.txt` and `GUST-FONT-LICENSE.txt`, which is why they are
+staged in the same directory as the faces. Both licences also reserve the font
+names, so a modified build has to be renamed.
+
+Adding the Google Fonts import brings a third party into your site rather than
+this one. That is between you and Google.
