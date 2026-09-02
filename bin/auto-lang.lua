@@ -1,5 +1,6 @@
 --[[
-Shared by Quarto and vanilla Pandoc, by all four recipes.
+Loaded by bin/md_formatter.py, so it rewrites the source rather than each
+render. Neither Quarto nor the vanilla Pandoc recipes know about it.
 
 Multilingual sources otherwise have to carry the language by hand:
 
@@ -14,17 +15,19 @@ reads it there instead: a document maps scripts to language tags,
       Greek: el
       Han: zh-Hant
 
-and each run of a mapped script is wrapped in the Span the author would have
-written, `dir=rtl` included for the right-to-left ones. Both pipelines and all
-four writers then behave exactly as they already do for hand-written spans:
-HTML gets `lang`/`dir` attributes, LaTeX `\foreignlanguage` inside `\RL`, and
-Typst `#text(lang: ...)`.
+and `pixi run format` writes each run of a mapped script into the source as
+the Span the author would have written, `dir=rtl` included for the
+right-to-left ones. What the four recipes then render is ordinary Pandoc
+markup, checked in and reviewable in a diff.
+
+Running it again changes nothing: a span that carries a `lang` is skipped
+whole, so only text added since the last run is ever tagged.
 
 A script is not a language: Han cannot tell zh-Hant from ja, and no rule can
 tell English from French. The mapping is therefore per document and explicit,
 and a hand-written span always wins -- this filter never looks inside one.
 
-config/script-ranges.lua is the generated table; see
+script-ranges.lua beside this file is the generated table; see
 scripts/generate_script_ranges.py.
 ]]
 

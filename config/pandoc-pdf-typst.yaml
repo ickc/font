@@ -6,12 +6,9 @@ standalone: true
 table-of-contents: true
 toc-depth: 3
 pdf-engine: typst
+# Expands root-relative link targets against `link-base` below. Only the PDF
+# recipes need this: a root-relative target already resolves in HTML.
 filters:
-  # Tags each run of a non-Latin script with the language the document's
-  # `auto-lang` map gives it, so the source needs no language spans of its own.
-  - ${.}/auto-lang.lua
-  # Expands root-relative link targets against `link-base` below. Only the PDF
-  # recipes need this: a root-relative target already resolves in HTML.
   - ${.}/absolute-links.lua
 # A defaults file's `metadata:` overrides the document's own front matter
 # rather than filling a gap in it, so only what belongs to the recipe goes

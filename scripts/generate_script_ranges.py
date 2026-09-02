@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Unicode script table that config/auto-lang.lua reads."""
+"""Generate the Unicode script table that bin/auto-lang.lua reads."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(os.environ.get("PIXI_PROJECT_ROOT", Path(__file__).resolve().parents[1]))
 CACHE = ROOT / ".cache" / "unicode"
-DESTINATION = ROOT / "config" / "script-ranges.lua"
+DESTINATION = ROOT / "bin" / "script-ranges.lua"
 
 # Pinned: a released version of the Unicode Character Database is immutable, so
 # the generated table changes only when this line does. The checked-in output is

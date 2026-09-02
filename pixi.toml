@@ -28,7 +28,7 @@ download-gentium = { cmd = "python scripts/install_fonts.py gentium", descriptio
 download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official WOFF file" }
 download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
 download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
-generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate config/script-ranges.lua from the Unicode Character Database" }
+generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate bin/script-ranges.lua from the Unicode Character Database" }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
@@ -37,8 +37,8 @@ setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "O
 # would reach into Quarto's `.quarto` cache and its `docs` output. The three
 # table extensions are switched off because their writers reformat this
 # project's pipe tables into far wider simple or multiline tables.
-format = { cmd = "python bin/md_formatter.py src --pattern '*.md' -t 'markdown-simple_tables-multiline_tables-grid_tables'", description = "Normalise every Markdown source through pandoc" }
-format-check = { cmd = "python bin/md_formatter.py src --pattern '*.md' -t 'markdown-simple_tables-multiline_tables-grid_tables' --check", description = "Fail if any Markdown source is not formatted. Primarily for CI." }
+format = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/auto-lang.lua -t 'markdown-simple_tables-multiline_tables-grid_tables'", description = "Normalise every Markdown source through pandoc" }
+format-check = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/auto-lang.lua -t 'markdown-simple_tables-multiline_tables-grid_tables' --check", description = "Fail if any Markdown source is not formatted. Primarily for CI." }
 
 build = { cmd = "quarto render", cwd = "src", description = "Render every format declared by the Quarto sources" }
 serve = { cmd = "quarto preview src --port $QUARTO_PORT --host 0.0.0.0", description = "Preview the Quarto site without installing fonts" }

@@ -7,9 +7,5 @@ table-of-contents: true
 toc-depth: 3
 html-math-method:
   method: mathml
-# Tags each run of a non-Latin script with the language the document's
-# `auto-lang` map gives it, so the source needs no language spans of its own.
-filters:
-  - ${.}/auto-lang.lua
 css:
   - assets/fonts.css
