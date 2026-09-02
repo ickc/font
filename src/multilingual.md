@@ -99,7 +99,7 @@ a reviewer reads in the diff.
 
 [וַיֹּ֥אמֶר אֱלֹהִים יְהִ֣י א֑וֹר וַֽיְהִי־אֽוֹר׃]{lang="he" dir="rtl"}
 
-[καὶ εἶπεν ὁ θεός Γενηθήτω φῶς. καὶ ἐγένετο φῶς]{lang="el"}.
+[καὶ εἶπεν ὁ θεός Γενηθήτω φῶς. καὶ ἐγένετο φῶς.]{lang="el"}
 
 And God said, Let there be light: and there was light.
 

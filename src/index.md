@@ -178,6 +178,23 @@ ones would be swallowed by the Hebrew run rather than ending it.
 checked in, so nothing downloads anything. Inline code and maths are never
 touched.
 
+### Checking what the algorithm derives
+
+Because a tagged span is left alone, `pixi run format` can only ever add to the
+spans a source already has, and what the algorithm would derive from the text
+on its own stops being visible the moment it has run once.
+`pixi run format-roundtrip` makes it visible again: `bin/strip-lang.lua`
+removes every span `lang` and `dir` --- and the span itself where that was all
+it carried --- and `pixi run format` then derives the tagging from scratch. The
+`git diff` it leaves is the answer.
+
+It is a debugging tool, deliberately outside CI, and its output is meant to be
+read and then reverted. Stripping cannot tell a hand-written override from a
+derived span, so the `zh-Hans` span in `src/multilingual.md` comes back as the
+`zh-Hant` its `auto-lang` map names. That is the useful part of the diff rather
+than a fault in it: it is exactly the list of decisions the text does not
+contain.
+
 ### What automation cannot decide
 
 A script is not a language. Han is written by Traditional Chinese, Simplified
@@ -288,8 +305,9 @@ through the extension and the vanilla-Pandoc MathJax defaults file includes it
 directly.
 
 `bin/` belongs to neither. `md_formatter.py`, `auto-lang.lua` and the generated
-`script-ranges.lua` prepare the sources both tools then read, and
-`scripts/generate_script_ranges.py` regenerates that table.
+`script-ranges.lua` prepare the sources both tools then read;
+`scripts/generate_script_ranges.py` regenerates that table, and
+`strip-lang.lua` undoes the tagging so it can be derived again and compared.
 
 ## Adding documents
 
