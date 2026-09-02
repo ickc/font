@@ -9,7 +9,6 @@ from pathlib import Path
 
 
 ROOT = Path(os.environ.get("PIXI_PROJECT_ROOT", Path(__file__).resolve().parents[1]))
-CACHE = ROOT / ".cache" / "unicode"
 DESTINATION = ROOT / "bin" / "script-ranges.lua"
 
 # Pinned: a released version of the Unicode Character Database is immutable, so
@@ -17,6 +16,9 @@ DESTINATION = ROOT / "bin" / "script-ranges.lua"
 # what the build reads; nothing downloads anything at render time.
 VERSION = "15.0.0"
 UCD = f"https://www.unicode.org/Public/{VERSION}/ucd/"
+# The cache is per release, so raising VERSION fetches that release rather than
+# relabelling the files an earlier one left behind under the same names.
+CACHE = ROOT / ".cache" / "unicode" / VERSION
 FILES = [
     "Scripts.txt",
     "ScriptExtensions.txt",
