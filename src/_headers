@@ -40,11 +40,21 @@
 # One number below is not honoured on font.kolen.dev, and the difference is not
 # in this repository. Cloudflare serves whichever is higher, the origin
 # `max-age` or the zone's Browser Cache TTL, and that zone is on Cloudflare's
-# four-hour default. The year survives, being higher. The hour is raised to
-# four. It stays an hour here because it is the right number, because a fork
-# deploying anywhere else gets it, and because the fix is one zone setting --
-# Caching -> Configuration -> Browser Cache TTL -> Respect Existing Headers --
-# rather than a worse value written down to match a setting.
+# four-hour default. The year survives, being higher: Cloudflare takes whichever
+# is greater, so a header asking for more than four hours is honoured as
+# written. The hour is raised to four. It stays an hour here because it is the
+# right number, because a fork deploying anywhere else gets it, and because the
+# fix does not belong in this file.
+#
+# The fix that does not belong here is also not the zone-wide one. Setting
+# Caching -> Configuration -> Browser Cache TTL -> Respect Existing Headers
+# would make the hour real, but it is the whole of kolen.dev, and Cloudflare
+# then stops inserting a `Cache-Control` at all where the origin sent none.
+# Every other Pages project on the zone ships the Pages default of
+# `max-age=0, must-revalidate`, which is why they are cached in a browser for
+# four hours today and would stop being. The scoped form is a Cache Rule
+# matching this hostname with Browser TTL set to Respect origin, which buys the
+# hour without spending anything on the neighbours.
 #
 # Measured rather than assumed, though not end to end: font.kolen.dev returns
 # max-age=14400 for a .css whose Pages origin sends max-age=0, which is the
