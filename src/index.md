@@ -442,11 +442,17 @@ anywhere else gets it, but on `font.kolen.dev` it is a zone setting rather than
 a file that decides.
 
 What that does not give you is a version to pin. The stylesheets are the same
-two URLs for everyone, so a face added or dropped reaches your site within the
-hour whether or not you wanted it to. A site that needs to decide for itself
-when its fonts change should copy `src/assets/` into its own tree; the licence
-files are staged beside the fonts precisely so that the directory is
-self-contained.
+two URLs for everyone, so a face added, dropped or moved to a newer upstream
+release reaches your site within that window whether or not you wanted it to.
+
+Family names survive that. Metrics are not promised with them: an upstream
+release is free to change advance widths, x-height or vertical metrics, nothing
+here would catch it, and a theme whose type scale was tuned against the current
+faces is what would show it --- `hpc.kolen.dev` sets `$font-size-base` and
+`$line-height-base` against Schola, and those are the numbers a new release
+could move under it. A site that needs to decide for itself when its fonts
+change should copy `src/assets/` into its own tree; the licence files are staged
+beside the fonts precisely so that the directory is self-contained.
 
 ### What linking obliges you to do
 
