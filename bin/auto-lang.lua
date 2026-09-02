@@ -210,12 +210,12 @@ local transparent = {
   Underline = true,
 }
 
---- Which run a container belongs to, from the text inside it.
+--- Which run an inline list belongs to, from the text inside it.
 -- Returns the script when everything script-bearing inside is that one mapped
 -- script, nil when there is nothing script-bearing at all, and false when the
--- container has to stay opaque: another script, prose that is not prose, or a
+-- list has to stay opaque: another script, prose that is not prose, or a
 -- language somebody has already written by hand.
-local function content_script(inline)
+local function list_script(inlines)
   local found, opaque = nil, false
 
   local function scan(items)
@@ -243,9 +243,13 @@ local function content_script(inline)
     end
   end
 
-  scan(inline.content)
+  scan(inlines)
   if opaque then return false end
   return found
+end
+
+local function content_script(inline)
+  return list_script(inline.content)
 end
 
 --- Group an inline list, so a run survives what sits inside it.
@@ -254,6 +258,17 @@ end
 -- quoted Chinese phrase would fall outside the span and lose its font.
 -- Anything else ends the run; its own inline list is visited in its own right.
 local function group(inlines)
+  -- A run with the whole list to itself takes the neutral text around it. The
+  -- full stop ending a paragraph of Greek is that paragraph's, and there is
+  -- nothing else in it the full stop could belong to. Where a second language
+  -- shares the list -- an English sentence quoting Hebrew -- this does not
+  -- apply, and the neutral text stays outside the span, which for a
+  -- right-to-left run is where the sentence's own punctuation belongs.
+  local whole = list_script(inlines)
+  if whole then
+    return pandoc.Inlines({ span(whole, pandoc.Inlines(inlines)) })
+  end
+
   local out, run, script, pending = pandoc.Inlines({}), {}, nil, {}
   local changed = false
 
