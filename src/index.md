@@ -343,7 +343,8 @@ repository root, where those targets do not exist.
 Gentium and Ezra SIL replace SBL Greek and SBL Hebrew. Besides removing the
 non-commercial restriction, the pair has compatible scholarly, calligraphic
 serif forms that sit naturally beside TeX Gyre Schola. The repository stages
-SIL's official web-font files rather than modifying them.
+SIL's official web-font files, recompressing Ezra SIL's WOFF into WOFF2 rather
+than rebuilding or subsetting it.
 
 Generated font binaries and documents are ignored by Git. Run `pixi run setup`
 once on a new authoring or deployment machine; subsequent builds reuse the

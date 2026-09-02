@@ -195,7 +195,18 @@ def ezra_sil() -> None:
         ):
             bundle.extract(member, temp_dir)
         install(temp_dir / root / "SILEOT.ttf")
-        stage(temp_dir / root / "web" / "SILEOT.woff")
+        # SIL ships this face as WOFF, the only one of the staged faces without
+        # a WOFF2 alongside it. Every browser that can render this site reads
+        # WOFF2, and recompressing the official web build into it takes about a
+        # quarter off the transfer -- the same tables in a smaller container,
+        # which is the step the TeX Gyre faces already go through from OTF.
+        from fontTools.ttLib import TTFont
+
+        WEB.mkdir(parents=True, exist_ok=True)
+        font = TTFont(temp_dir / root / "web" / "SILEOT.woff")
+        font.flavor = "woff2"
+        font.save(WEB / "SILEOT.woff2")
+        font.close()
         install(temp_dir / root / "Licenses.txt", "EzraSIL-Licenses.txt")
         stage(temp_dir / root / "Licenses.txt", "EzraSIL-Licenses.txt")
 
