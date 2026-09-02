@@ -86,9 +86,10 @@ local function own_script(codepoint)
 end
 
 --- Classify one code point.
--- "script"  its own script, whether or not the document maps it
--- "tied"    belonging with the mapped scripts in the set by Script_Extensions
--- "neutral" everything else: spaces, digits, ASCII punctuation
+-- "script"     its own script, whether or not the document maps it
+-- "tied"       belonging with the mapped scripts in the set by Script_Extensions
+-- "inherited"  Script=Inherited: it takes the script of what precedes it
+-- "neutral"    everything else: spaces, digits, ASCII punctuation
 -- Answers are memoised: a search over every script for every code point of a
 -- long document is a lot of searching for an alphabet's worth of answers.
 local memo = {}
@@ -116,6 +117,13 @@ local function classify(codepoint)
     end
     -- Otherwise a script of its own, mapped or not, still ends a run.
     if kind == "neutral" and own then kind, value = "script", own end
+    -- A combining mark is Script=Inherited: UAX #24 gives it the script of the
+    -- character it sits on. A decomposed ά is alpha followed by U+0301,
+    -- which no Script_Extensions entry ties to Greek, so without this the
+    -- accent would be left outside the span its base letter went into.
+    if kind == "neutral" and contains(unicode.inherited, codepoint) then
+      kind = "inherited"
+    end
   end
   memo[codepoint] = { kind, value }
   return kind, value
@@ -181,6 +189,18 @@ local function split(text)
       close()
       drain()
       pieces[#pieces + 1] = { text = char, foreign = true }
+    elseif kind == "inherited" then
+      -- The mark goes wherever its base went: onto the end of the run when the
+      -- base is the last thing the run took, and otherwise onto the pending
+      -- entry the base is in, so the two are carried or drained together.
+      local last = pending[#pending]
+      if last then
+        last.char = last.char .. char
+      elseif run then
+        run.text = run.text .. char
+      else
+        pending[#pending + 1] = { char = char }
+      end
     else
       pending[#pending + 1] = { char = char, tied = value }
     end
