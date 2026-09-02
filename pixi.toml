@@ -35,6 +35,13 @@ generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", des
 render-diagrams = { cmd = "python scripts/render_diagrams.py", description = "Draw each mermaid block into src/diagrams/ (needs npx and Chrome)" }
 render-diagrams-check = { cmd = "python scripts/render_diagrams.py --check", description = "Fail if a drawn diagram is missing or orphaned. Primarily for CI." }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
+
+# Only src/mermaid-quarto.qmd needs this, and only because Quarto draws its
+# native mermaid diagrams in a headless browser. It is a ~260 MB download, so it
+# is deliberately not part of `setup`: the other diagram pattern needs no
+# browser to build, and a checkout that renders neither page needs none either.
+# Without it that one page stops with "Chrome not found" and names this task.
+setup-chrome = { cmd = "quarto install chrome-headless-shell --no-prompt", description = "Install the headless browser Quarto renders native mermaid with" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
 # Round-trips each source through pandoc so the checked-in Markdown is what
@@ -42,6 +49,12 @@ setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "O
 # would reach into Quarto's `.quarto` cache and its `docs` output. The three
 # table extensions are switched off because their writers reformat this
 # project's pipe tables into far wider simple or multiline tables.
+#
+# `src/*.qmd` is excluded for a different reason than tidiness. This round trip
+# rewrites each file through pandoc, and pandoc misparses a Quarto executable
+# cell -- a ``` {mermaid} ``` block collapses into one inline code span -- so
+# formatting src/mermaid-quarto.qmd would corrupt it. That page is outside this
+# task and outside CI's `format-check` as a result.
 format = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/auto-lang.lua -t 'markdown-simple_tables-multiline_tables-grid_tables'", description = "Normalise every Markdown source through pandoc" }
 format-check = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/auto-lang.lua -t 'markdown-simple_tables-multiline_tables-grid_tables' --check", description = "Fail if any Markdown source is not formatted. Primarily for CI." }
 

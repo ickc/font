@@ -1,5 +1,11 @@
 PANDOC ?= pandoc
 OUTPUT_DIR := pandoc-output
+# `src/*.md`, never `src/*.qmd`. The one .qmd here holds a Quarto executable
+# cell, and pandoc does not merely ignore one -- its attribute parser rejects
+# the dotless `{mermaid}`, the fence stops being a code block, and the diagram
+# collapses into a run-on inline code span in the middle of the prose. Excluding
+# it by glob is what keeps that out of these four artifacts. See
+# src/mermaid-quarto.qmd, which documents the pattern it belongs to.
 SOURCES := $(wildcard src/*.md)
 NAMES := $(patsubst src/%.md,%,$(SOURCES))
 HTML_MATHML := $(addprefix $(OUTPUT_DIR)/,$(addsuffix .html,$(NAMES)))
