@@ -26,3 +26,7 @@ metadata:
     hebrew: Ezra SIL
     # Font filename stem: OSFONTDIR lets fontspec find Regular and Bold files.
     chinese-hant: NotoSansCJKtc
+    # Pandoc turns every distinct `lang` into a distinct babel language, so a
+    # span overriding a document's `auto-lang` map needs its own entry here
+    # even when the face is the same. src/multilingual.md has one.
+    chinese-hans: NotoSansCJKtc

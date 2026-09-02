@@ -8,3 +8,12 @@ exclude_path = [
     "src/docs/sitemap.xml",
     "src/docs/robots.txt",
 ]
+
+# The GUST font licence is a verbatim upstream file, and the two www.gust.org.pl
+# URLs in it are historical: they still resolve, but through a redirect and from
+# a host that answers slowly enough to exhaust lychee's defaults (20s, 3 retries
+# 1s apart) from a GitHub runner. That failed a build over links that are fine,
+# so give a slow host more room before the whole check is called a failure.
+timeout = 30
+max_retries = 5
+retry_wait_time = 2
