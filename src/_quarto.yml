@@ -29,6 +29,8 @@ website:
         text: Multilingual
       - href: math.md
         text: Mathematics
+      - href: mermaid.md
+        text: Diagrams
     right:
       - icon: github
         href: https://github.com/ickc/font
