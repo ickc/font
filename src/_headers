@@ -17,8 +17,26 @@
 # ~2 MB of faces, so nothing is saved by caching them hard, and everything a
 # consumer can be told later -- a new face, a renamed file, a dropped family --
 # has to travel through them.
+#
+# Every rule matches by extension, and never `/assets/*`, because two matching
+# rules do not resolve in favour of the specific one: Pages CONCATENATES their
+# values into a single field. A `/assets/*` year beside a `/assets/*.css` hour
+# was served as
+#
+#   cache-control: public, max-age=31536000, immutable, public, max-age=3600, must-revalidate
+#
+# which is two max-ages and an `immutable` on a file that must stay bustable.
+# Duplicate directives have no dependable resolution across caches, and
+# Chromium takes the first, so the stylesheets would have quietly inherited the
+# year. Matching disjointly is what makes each file's lifetime the one written
+# down here.
+#
+# Anything without a rule keeps the Pages default of four hours, which is why
+# the licence .txt files are absent rather than listed: they are tiny, rarely
+# fetched, and must never be stuck stale for a year. That fallback is also what
+# makes a new asset type fail safe -- too short, never unbustable.
 
-/assets/*
+/assets/*.woff2
   Cache-Control: public, max-age=31536000, immutable
 
 /assets/*.css
