@@ -297,8 +297,14 @@ it for Quarto.
 | Consumer | Files |
 |------------------------------------------------------------|------------------------------------------------------------|
 | Both | `src/*.md` content and shared metadata, `src/assets/faces.css` and `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
-| Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
+| Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml`, `src/_headers` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
+
+`src/_headers` is the deployment's, not either renderer's: Cloudflare Pages
+reads it from the published root to set the cache lifetimes above. It sits
+outside `assets/`, so the Makefile's `src/assets/*` staging never sees it, and
+Quarto copies it only because `resources:` names it --- a `_`-prefixed file is
+otherwise skipped, and dropped from `docs/` without a word.
 
 `src/_extensions/mathjax4/mathjax-schola.html` is shared: Quarto reaches it
 through the extension and the vanilla-Pandoc MathJax defaults file includes it
@@ -410,16 +416,29 @@ accident of the current file.
 
 ### What is stable, and what is not
 
-The two paths above, the family names they declare, and the two custom property
-names will not be renamed or removed. The font files behind them may be
-replaced in place --- a new upstream release, a better compression --- keeping
-the same family names and metrics.
+The two stylesheet paths, the family names they declare, and the two custom
+property names will not be renamed or removed.
 
-There is no way to pin a version. The assets are served from unversioned paths
-as `cache-control: public, max-age=14400, must-revalidate`, so a replaced file
-reaches every consuming site within four hours. A site that cannot accept that
-should copy `src/assets/` into its own tree instead; the licence files are
-staged beside the fonts precisely so that the directory is self-contained.
+A font file is never replaced in place. A face is a pinned upstream release,
+and when one is updated it is published under a new filename and the stylesheet
+is pointed at it. So a `.woff2` URL, once it resolves, keeps returning the same
+bytes for as long as it exists --- which is what lets it be served
+`cache-control: public, max-age=31536000, immutable`, and what makes the fonts
+worth caching for a year rather than the afternoon a Pages default would give
+them.
+
+The stylesheets are the moving part, and they are deliberately the cheap one:
+`max-age=3600, must-revalidate` on about 3 KB, against roughly 2 MB of faces
+that a returning visitor now never refetches. Everything a consumer can be told
+later --- a new face, a renamed file, a family that goes away --- travels
+through them, so an hour is the longest anything here takes to propagate.
+
+What that does not give you is a version to pin. The stylesheets are the same
+two URLs for everyone, so a face added or dropped reaches your site within the
+hour whether or not you wanted it to. A site that needs to decide for itself
+when its fonts change should copy `src/assets/` into its own tree; the licence
+files are staged beside the fonts precisely so that the directory is
+self-contained.
 
 ### What linking obliges you to do
 

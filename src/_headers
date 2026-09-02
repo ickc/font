@@ -1,0 +1,25 @@
+# Cloudflare Pages reads this from the published root and does not serve it.
+# Quarto skips `_`-prefixed files, so `_quarto.yml` names it under `resources:`
+# explicitly; without that line the file is dropped from `docs/` in silence and
+# every rule below simply never exists.
+#
+# Two tiers, and the split is the whole point.
+#
+# The fonts never change. A face is a pinned upstream release, and when one is
+# replaced it goes out under a NEW FILENAME rather than over the old bytes --
+# which is what earns `immutable` on paths that carry no content hash.
+# `immutable` means a browser will not revalidate even on a reload, so a file
+# replaced in place would be stuck for a year with no way to bust it. Renaming
+# is the escape hatch, and it costs nothing: the stylesheet is what names the
+# file, and the stylesheet goes stale in an hour.
+#
+# So the stylesheets are the lever, and they stay short. They are ~3 KB against
+# ~2 MB of faces, so nothing is saved by caching them hard, and everything a
+# consumer can be told later -- a new face, a renamed file, a dropped family --
+# has to travel through them.
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.css
+  Cache-Control: public, max-age=3600, must-revalidate
