@@ -6,6 +6,7 @@ project:
     - "*.md"
   resources:
     - assets/**
+    - _headers
 
 website:
   title: "Font"

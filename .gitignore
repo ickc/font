@@ -5,6 +5,7 @@ pandoc-output/
 src/.quarto/
 src/docs/
 src/assets/*
+!src/assets/faces.css
 !src/assets/fonts.css
 *.aux
 *.log

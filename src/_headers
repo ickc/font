@@ -1,0 +1,69 @@
+# Cloudflare Pages reads this from the published root and does not serve it.
+# Quarto skips `_`-prefixed files, so `_quarto.yml` names it under `resources:`
+# explicitly; without that line the file is dropped from `docs/` in silence and
+# every rule below simply never exists.
+#
+# Two tiers, and the split is the whole point.
+#
+# The fonts never change. A face is a pinned upstream release, and when one is
+# replaced it goes out under a NEW FILENAME rather than over the old bytes --
+# which is what earns `immutable` on paths that carry no content hash.
+# `immutable` means a browser will not revalidate even on a reload, so a file
+# replaced in place would be stuck for a year with no way to bust it. Renaming
+# is the escape hatch, and it costs nothing: the stylesheet is what names the
+# file, and the stylesheet goes stale in an hour.
+#
+# So the stylesheets are the lever, and they stay short. They are ~3 KB against
+# ~2 MB of faces, so nothing is saved by caching them hard, and everything a
+# consumer can be told later -- a new face, a renamed file, a dropped family --
+# has to travel through them.
+#
+# Every rule matches by extension, and never `/assets/*`, because two matching
+# rules do not resolve in favour of the specific one: Pages CONCATENATES their
+# values into a single field. A `/assets/*` year beside a `/assets/*.css` hour
+# was served as
+#
+#   cache-control: public, max-age=31536000, immutable, public, max-age=3600, must-revalidate
+#
+# which is two max-ages and an `immutable` on a file that must stay bustable.
+# Duplicate directives have no dependable resolution across caches, and
+# Chromium takes the first, so the stylesheets would have quietly inherited the
+# year. Matching disjointly is what makes each file's lifetime the one written
+# down here.
+#
+# Anything without a rule keeps the Pages default, which is
+# `public, max-age=0, must-revalidate` -- revalidated every time, never stale.
+# That is why the licence .txt files are absent rather than listed: they are
+# tiny, rarely fetched, and must not be stuck for a year. It is also what makes
+# a new asset type fail safe -- too short, never unbustable.
+#
+# One number below is not honoured on font.kolen.dev, and the difference is not
+# in this repository. Cloudflare serves whichever is higher, the origin
+# `max-age` or the zone's Browser Cache TTL, and that zone is on Cloudflare's
+# four-hour default. The year survives, being higher: Cloudflare takes whichever
+# is greater, so a header asking for more than four hours is honoured as
+# written. The hour is raised to four. It stays an hour here because it is the
+# right number, because a fork deploying anywhere else gets it, and because the
+# fix does not belong in this file.
+#
+# The fix that does not belong here is also not the zone-wide one. Setting
+# Caching -> Configuration -> Browser Cache TTL -> Respect Existing Headers
+# would make the hour real, but it is the whole of kolen.dev, and Cloudflare
+# then stops inserting a `Cache-Control` at all where the origin sent none.
+# Every other Pages project on the zone ships the Pages default of
+# `max-age=0, must-revalidate`, which is why they are cached in a browser for
+# four hours today and would stop being. The scoped form is a Cache Rule
+# matching this hostname with Browser TTL set to Respect origin, which buys the
+# hour without spending anything on the neighbours.
+#
+# Measured rather than assumed, though not end to end: font.kolen.dev returns
+# max-age=14400 for a .css whose Pages origin sends max-age=0, which is the
+# zone raising it, while .txt passes through at max-age=0 because it is not a
+# default-cached extension. The hour's fate follows from the same rule and
+# cannot be observed directly until this reaches production.
+
+/assets/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*.css
+  Cache-Control: public, max-age=3600, must-revalidate

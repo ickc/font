@@ -296,9 +296,15 @@ it for Quarto.
 
 | Consumer | Files |
 |------------------------------------------------------------|------------------------------------------------------------|
-| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
-| Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
+| Both | `src/*.md` content and shared metadata, `src/assets/faces.css` and `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
+| Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml`, `src/_headers` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
+
+`src/_headers` is the deployment's, not either renderer's: Cloudflare Pages
+reads it from the published root to set the cache lifetimes above. It sits
+outside `assets/`, so the Makefile's `src/assets/*` staging never sees it, and
+Quarto copies it only because `resources:` names it --- a `_`-prefixed file is
+otherwise skipped, and dropped from `docs/` without a word.
 
 `src/_extensions/mathjax4/mathjax-schola.html` is shared: Quarto reaches it
 through the extension and the vanilla-Pandoc MathJax defaults file includes it
@@ -343,7 +349,8 @@ repository root, where those targets do not exist.
 Gentium and Ezra SIL replace SBL Greek and SBL Hebrew. Besides removing the
 non-commercial restriction, the pair has compatible scholarly, calligraphic
 serif forms that sit naturally beside TeX Gyre Schola. The repository stages
-SIL's official web-font files rather than modifying them.
+SIL's official web-font files, recompressing Ezra SIL's WOFF into WOFF2 rather
+than rebuilding or subsetting it.
 
 Generated font binaries and documents are ignored by Git. Run `pixi run setup`
 once on a new authoring or deployment machine; subsequent builds reuse the
@@ -353,3 +360,119 @@ LuaLaTeX itself must be installed by the host TeX Live distribution. Quarto's
 `latex-tinytex: false` selects that host installation, and vanilla Pandoc finds
 `lualatex` through `PATH`; no engine-selection wrapper is needed. The build does
 not attempt to replace the operating system's TeX Live installation.
+
+## Using these fonts on another site
+
+The stylesheets this site publishes are a supported distribution, not only a
+demo of one. Another site may link them directly, and
+[hpc.kolen.dev](https://hpc.kolen.dev) does. Cloudflare Pages answers with
+`access-control-allow-origin: *`, which is what a cross-origin font fetch
+needs, and the `url()` references inside the stylesheets are relative, so the
+`.woff2` files follow from this origin without anything being vendored.
+
+Two URLs are public:
+
+| URL | Contents |
+|------------------------------------------------------------|------------------------------------------------------------|
+| `https://font.kolen.dev/assets/faces.css` | Every `@font-face`, and the two custom properties below. Nothing else. |
+| `https://font.kolen.dev/assets/fonts.css` | `faces.css`, the Google Fonts import for Noto Sans TC, and this site's own element rules. |
+
+Link `faces.css`. `fonts.css` additionally asserts what `body`, `code` and
+`math` are set in, which is right for this site and wrong for a theme that has
+already decided. It also reaches Google Fonts on every page load, from a third
+origin, which an English-only site gets nothing for.
+
+``` html
+<link rel="preconnect" href="https://font.kolen.dev">
+<link rel="preconnect" href="https://font.kolen.dev" crossorigin>
+<link rel="stylesheet" href="https://font.kolen.dev/assets/faces.css">
+```
+
+The `preconnect` is worth the line: a consumer's first font byte is otherwise
+two round trips behind its own stylesheet. Both lines, though, and not because
+one origin is written twice. A font fetch is anonymous-mode CORS, and a browser
+keeps that connection in a pool of its own, so the `crossorigin` line is the one
+that warms the font fetches and dropping it warms the wrong connection. The
+stylesheet request is credentialed and uses the other pool: with only the
+`crossorigin` line it gets a cold connection anyway, which is half the cost left
+in place and the earlier half at that. This is the two-line form Google Fonts
+publishes, for exactly this reason.
+
+### The names a consumer has to repeat
+
+Declaring the faces is not using them. These are the family names to name in
+your own theme --- `TeX Gyre Schola`, `TeX Gyre Schola Math`, `Gentium`,
+`Ezra SIL`, `JetBrains Mono`, and, if you add the Google Fonts import yourself,
+`Noto Sans TC`.
+
+In a Quarto or Bootstrap site they belong in `$font-family-base` and
+`$font-family-monospace`, not in a `body` rule: those variables are what
+generate the navbar, sidebar, headings, buttons and syntax highlighter too, and
+a `body` rule reaches none of them.
+
+`faces.css` also exports `--font-body` and `--font-code`. Reading one costs you
+the fallback stack: an undefined `var()` is invalid at computed-value time, so
+if this origin is ever unreachable the whole declaration is dropped rather than
+falling through to the generic family beside it. Name the families directly
+where that matters.
+
+Every face is declared `font-display: swap`, so text is readable in a fallback
+while the face arrives rather than invisible. That is a promise, not an
+accident of the current file.
+
+### What is stable, and what is not
+
+The two stylesheet paths, the family names they declare, and the two custom
+property names will not be renamed or removed.
+
+A font file is never replaced in place. A face is a pinned upstream release,
+and when one is updated it is published under a new filename and the stylesheet
+is pointed at it. So a `.woff2` URL, once it resolves, keeps returning the same
+bytes for as long as it exists --- which is what lets it be served
+`cache-control: public, max-age=31536000, immutable`, and what makes the fonts
+worth caching for a year rather than the afternoon a Pages default would give
+them.
+
+The stylesheets are the moving part, and they are deliberately the cheap one:
+`max-age=3600, must-revalidate` on about 3 KB, against roughly 2 MB of faces
+that a returning visitor now never refetches. Everything a consumer can be told
+later --- a new face, a renamed file, a family that goes away --- travels
+through them.
+
+Plan on four hours for that, not one. Cloudflare serves whichever is higher,
+the origin's `max-age` or the zone's Browser Cache TTL, and this zone is on
+Cloudflare's four-hour default: the faces keep their year, and anything asking
+for less than four hours is raised to four. `src/_headers` asks for an hour
+because that is the right number and because a copy of this site deployed
+anywhere else gets it, but on `font.kolen.dev` it is a zone setting rather than
+a file that decides.
+
+What that does not give you is a version to pin. The stylesheets are the same
+two URLs for everyone, so a face added, dropped or moved to a newer upstream
+release reaches your site within that window whether or not you wanted it to.
+
+Family names survive that. Metrics are not promised with them: an upstream
+release is free to change advance widths, x-height or vertical metrics, nothing
+here would catch it, and a theme whose type scale was tuned against the current
+faces is what would show it --- `hpc.kolen.dev` sets `$font-size-base` and
+`$line-height-base` against Schola, and those are the numbers a new release
+could move under it. A site that needs to decide for itself when its fonts
+change should copy `src/assets/` into its own tree; the licence files are staged
+beside the fonts precisely so that the directory is self-contained.
+
+### What linking obliges you to do
+
+The OFL and the GUST Font License both govern copying, modifying and bundling
+the font software. A `<link>` to this origin does none of those: the copy the
+visitor's browser receives comes from here, and the licence files are published
+here beside it, at `https://font.kolen.dev/assets/`, precisely so that the party
+doing the distributing is the one carrying them.
+
+Copying `src/assets/` makes you that party instead, and then the licence files
+come with it --- `Gentium-OFL.txt`, `EzraSIL-Licenses.txt`,
+`JetBrainsMono-OFL.txt` and `GUST-FONT-LICENSE.txt`, which is why they are
+staged in the same directory as the faces. Both licences also reserve the font
+names, so a modified build has to be renamed.
+
+Adding the Google Fonts import brings a third party into your site rather than
+this one. That is between you and Google.

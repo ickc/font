@@ -1,125 +1,21 @@
-/* Shared by Quarto and vanilla Pandoc for both HTML recipes.
+/* This site's own font rules: the faces, plus what is set in them.
 
-   Noto's official Google Fonts web family. The API returns unicode-ranged
-   WOFF2 slices, so browsers only fetch the Traditional Chinese ranges used. */
+   Shared by Quarto and vanilla Pandoc for both HTML recipes, and the one file
+   that demonstrates the whole pattern. Another site almost certainly wants
+   `faces.css` instead -- the same @font-face declarations without the family
+   assertions below, which belong to this theme and to no one else's.
+
+   The faces arrive through an @import rather than being repeated here, so the
+   two files cannot drift. That costs this site one round trip before the fonts
+   are discovered; a consumer avoids it by linking `faces.css` directly. */
+@import url("faces.css");
+
+/* Noto's official Google Fonts web family. The API returns unicode-ranged
+   WOFF2 slices, so browsers only fetch the Traditional Chinese ranges used --
+   but this stylesheet itself is fetched every time, from a third origin, and
+   an English-only site gets nothing for it. That is why it is here and not in
+   `faces.css`: taking the faces does not drag Google in with them. */
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap");
-
-@font-face {
-  font-family: "TeX Gyre Schola";
-  src: url("texgyreschola-regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "TeX Gyre Schola";
-  src: url("texgyreschola-bold.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "TeX Gyre Schola";
-  src: url("texgyreschola-italic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "TeX Gyre Schola";
-  src: url("texgyreschola-bolditalic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "TeX Gyre Schola Math";
-  src: url("texgyreschola-math.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gentium";
-  src: url("Gentium-Regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gentium";
-  src: url("Gentium-Bold.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gentium";
-  src: url("Gentium-Italic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Gentium";
-  src: url("Gentium-BoldItalic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Ezra SIL";
-  src: url("SILEOT.woff") format("woff");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("JetBrainsMono-Regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("JetBrainsMono-Bold.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("JetBrainsMono-Italic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "JetBrains Mono";
-  src: url("JetBrainsMono-BoldItalic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-}
-
-:root {
-  --font-body: "TeX Gyre Schola", serif;
-  --font-code: "JetBrains Mono", monospace;
-}
 
 body {
   font-family: var(--font-body);

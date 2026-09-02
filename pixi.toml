@@ -25,7 +25,7 @@ download-tex-gyre-schola = { cmd = "python scripts/install_fonts.py tex-gyre-sch
 download-tex-gyre-schola-math = { cmd = "python scripts/install_fonts.py tex-gyre-schola-math", description = "Install TeX Gyre Schola Math and stage its web font" }
 download-noto-cjk-tc = { cmd = "python scripts/install_fonts.py noto-cjk-tc", description = "Install Noto Sans CJK TC (web output uses Google Fonts)" }
 download-gentium = { cmd = "python scripts/install_fonts.py gentium", description = "Install Gentium and stage its official WOFF2 files" }
-download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official WOFF file" }
+download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official web font as WOFF2" }
 download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
 download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
 generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate bin/script-ranges.lua from the Unicode Character Database" }
