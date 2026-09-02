@@ -115,10 +115,15 @@ Simplified Chinese and Japanese alike, and no rule can tell them apart. Where
 the language is not the one the map names, write it out. The formatter leaves a
 span that already carries a `lang` --- and everything inside it --- alone:
 
-[学而时习之，不亦说乎？人不知而不愠，不亦君子乎？]{lang="zh-Hans"}
+[神说："要有光。"就有了光。]{lang="zh-Hans"}
 
-That line is Simplified, and it was written by hand. Nothing in the file marks
-it as different from the spans above, and nothing needs to: once formatting has
-run, its output is markup like any other, editable in place. Noto Sans CJK TC
-carries the glyphs either way, so the override changes what the document says
-about the text rather than which face draws it.
+That is the fourth line above again, written the way Simplified Chinese writes
+it: one Han character differs, and the rest is punctuation convention. No rule
+over the script can see either, so left to the map this line would have come
+out labelled zh-Hant --- the right script, the wrong language.
+
+Nothing else in the file marks the span as different from the ones the
+formatter wrote, and nothing needs to: once formatting has run, its output is
+markup like any other, editable in place. Noto Sans CJK TC carries the glyphs
+either way, so the override changes what the document says about the text
+rather than which face draws it.
