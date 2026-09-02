@@ -383,14 +383,20 @@ already decided. It also reaches Google Fonts on every page load, from a third
 origin, which an English-only site gets nothing for.
 
 ``` html
+<link rel="preconnect" href="https://font.kolen.dev">
 <link rel="preconnect" href="https://font.kolen.dev" crossorigin>
 <link rel="stylesheet" href="https://font.kolen.dev/assets/faces.css">
 ```
 
 The `preconnect` is worth the line: a consumer's first font byte is otherwise
-two round trips behind its own stylesheet. `crossorigin` is required on it,
-because a font fetch is anonymous-mode CORS and a preconnect without it warms
-the wrong connection.
+two round trips behind its own stylesheet. Both lines, though, and not because
+one origin is written twice. A font fetch is anonymous-mode CORS, and a browser
+keeps that connection in a pool of its own, so the `crossorigin` line is the one
+that warms the font fetches and dropping it warms the wrong connection. The
+stylesheet request is credentialed and uses the other pool: with only the
+`crossorigin` line it gets a cold connection anyway, which is half the cost left
+in place and the earlier half at that. This is the two-line form Google Fonts
+publishes, for exactly this reason.
 
 ### The names a consumer has to repeat
 
