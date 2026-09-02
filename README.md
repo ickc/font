@@ -7,7 +7,10 @@ and Typst PDF — by both Quarto and vanilla Pandoc, from one set of sources.
 
 **<https://font.kolen.dev>** is the rendered site, and is the place to read this.
 It is where the pattern demonstrates itself: the [multilingual][], [mathematics][]
-and [diagram][] samples are the same Markdown shown in all four outputs.
+and [diagram][] samples are the same Markdown shown in all four outputs. Mermaid
+diagrams come two ways --- a [Lua filter][diagram] that reaches all eight
+renderings, and [Quarto's own machinery][diagram-quarto], which is less to set
+up and reaches four.
 
 The deployed stylesheets are a supported distribution: another site may link
 `https://font.kolen.dev/assets/faces.css` rather than vendor the faces. What is
@@ -27,3 +30,4 @@ pixi run serve   # preview it
 [multilingual]: https://font.kolen.dev/multilingual.html
 [mathematics]: https://font.kolen.dev/math.html
 [diagram]: https://font.kolen.dev/mermaid.html
+[diagram-quarto]: https://font.kolen.dev/mermaid-quarto.html

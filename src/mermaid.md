@@ -84,6 +84,12 @@ subject of this page and its own illustration: it is drawn from a fenced
 `mermaid` block in this file, and every label in it is TeX Gyre Schola, in all
 eight renderings of this page.
 
+This is one of two diagram patterns here, and the portable one. The other uses
+[Quarto's own mermaid support](/mermaid-quarto.html), writes no filter and keeps
+no generated files, and gives that up in exchange: four outputs instead of
+eight, and a raster in the PDFs instead of text. That page compares them
+directly; this one explains how eight renderings are reached.
+
 ``` mermaid
 flowchart LR
   MD["src/name.md"]
@@ -126,6 +132,13 @@ PDF; vanilla Pandoc has no mermaid support at all, in any format. Four of the
 eight outputs would still have needed something written here, and the four
 Quarto did handle would have been drawn by two different renderers --- the
 browser's mermaid and Chrome's --- with no guarantee the pictures matched.
+
+What those PDFs would contain is worth naming too, because it is the difference
+this pattern exists for. Quarto's PDF diagram is a **raster** --- and only if
+`mermaid-format: png` is set, since the default and `svg` both drop the picture
+and still exit zero. The pictures below are vector, and their labels are real
+text in an embedded Schola subset, selectable and searchable like the prose.
+[The other page](/mermaid-quarto.html) is that pattern, written out.
 
 So the diagram is a plain ```` ```mermaid ```` fenced block, which is also what GitHub
 renders when it displays this file, and one Lua filter loaded by all four
