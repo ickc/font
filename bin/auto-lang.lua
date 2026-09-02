@@ -53,9 +53,28 @@ local function contains(ranges, codepoint)
   return false
 end
 
+--- The script a code point's own Script property names, or nil for none.
+-- One search over every strong range in the database, which is why the table
+-- is generated flat and sorted rather than one list per script.
+local function own_script(codepoint)
+  local low, high = 1, #unicode.strong
+  while low <= high do
+    local middle = (low + high) // 2
+    local range = unicode.strong[middle]
+    if codepoint < range[1] then
+      high = middle - 1
+    elseif codepoint > range[2] then
+      low = middle + 1
+    else
+      return range[3]
+    end
+  end
+  return nil
+end
+
 --- Classify one code point.
 -- "script"  its own script, whether or not the document maps it
--- "tied"    Common or Inherited, but belonging with the scripts in the set
+-- "tied"    belonging with the mapped scripts in the set by Script_Extensions
 -- "neutral" everything else: spaces, digits, ASCII punctuation
 -- Answers are memoised: a search over every script for every code point of a
 -- long document is a lot of searching for an alphabet's worth of answers.
@@ -66,20 +85,24 @@ local function classify(codepoint)
   if cached then return cached[1], cached[2] end
 
   local kind, value = "neutral", nil
-  for script, ranges in pairs(unicode.strong) do
-    if contains(ranges, codepoint) then
-      kind, value = "script", script
-      break
-    end
-  end
-  if kind == "neutral" then
+  local own = own_script(codepoint)
+  if own and mapped[own] then
+    kind, value = "script", own
+  else
+    -- Script_Extensions is consulted for every code point the document does
+    -- not already own outright, not only for the Common and Inherited ones.
+    -- The Arabic-Indic digits are Script=Arabic and also written in Thaana, so
+    -- in a Dhivehi document a digit between two Thaana words has to continue
+    -- the run rather than end it as unmapped Arabic would.
     for script in pairs(mapped) do
-      if contains(unicode.ext[script], codepoint) then
+      if contains(unicode.ext[script] or {}, codepoint) then
         kind = "tied"
         value = value or {}
         value[script] = true
       end
     end
+    -- Otherwise a script of its own, mapped or not, still ends a run.
+    if kind == "neutral" and own then kind, value = "script", own end
   end
   memo[codepoint] = { kind, value }
   return kind, value
@@ -87,8 +110,9 @@ end
 
 --- Split a string into maximal runs of one mapped script.
 -- Returns a list of `{text=..., script=...}`, `script` absent for the text
--- between runs. Neutral code points join a run only when it continues on the
--- other side of them, which is what keeps a Hebrew phrase whole without
+-- between runs, which is marked `foreign` when it is another script's own text
+-- rather than neutral. Neutral code points join a run only when it continues
+-- on the other side of them, which is what keeps a Hebrew phrase whole without
 -- swallowing the space that ends it. Script-tied ones join a run they merely
 -- touch, which is what keeps 。 and 」 with the Han text they punctuate.
 local function split(text)
@@ -137,10 +161,11 @@ local function split(text)
         run = { text = carried .. char, script = value }
       end
     elseif kind == "script" then
-      -- Another script's own text ends the run rather than joining it.
+      -- Another script's own text ends the run rather than joining it, so it
+      -- is kept apart from the neutral text that may sit either side of it.
       close()
       drain()
-      pieces[#pieces + 1] = { text = char }
+      pieces[#pieces + 1] = { text = char, foreign = true }
     else
       pending[#pending + 1] = { char = char, tied = value }
     end
@@ -151,7 +176,8 @@ local function split(text)
   local merged = {}
   for _, piece in ipairs(pieces) do
     local last = merged[#merged]
-    if last and not last.script and not piece.script then
+    if last and not last.script and not piece.script
+      and last.foreign == piece.foreign then
       last.text = last.text .. piece.text
     else
       merged[#merged + 1] = piece
@@ -257,7 +283,12 @@ local function group(inlines)
       add(inline, nil)
     elseif inline.t == "Str" then
       for _, piece in ipairs(split(inline.text)) do
-        add(pandoc.Str(piece.text), piece.script)
+        if piece.foreign then
+          close()
+          out:insert(pandoc.Str(piece.text))
+        else
+          add(pandoc.Str(piece.text), piece.script)
+        end
       end
     elseif transparent[inline.t] and not (inline.t == "Span" and inline.attributes.lang) then
       local content = content_script(inline)
@@ -282,13 +313,13 @@ return {
   {
     Meta = function(meta)
       for script, tag in pairs(meta["auto-lang"] or {}) do
-        if unicode.strong[script] then
+        if unicode.names[script] then
           languages[script] = pandoc.utils.stringify(tag)
           mapped[script] = true
         else
           io.stderr:write(
             "[WARNING] auto-lang: no Unicode script named " .. script ..
-            " in config/script-ranges.lua\n")
+            " in bin/script-ranges.lua\n")
         end
       end
     end,
