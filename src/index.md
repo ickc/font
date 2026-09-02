@@ -196,11 +196,23 @@ these samples --- but it is LuaTeX-only and leaves the other three formats
 untouched. Typst needs no help with fonts at all, for the reason below.
 
 Doing it once, in the source, is what makes one set of sources produce the same
-semantics in all four outputs. Speed is not the argument: measured on these
-samples the filter added 8 ms to a 16 ms HTML render, against six seconds for
-the LuaLaTeX one. Reviewability is. A hand-written Unicode segmentation stays
-out of the render path, and whatever it decided is visible in the repository
-rather than re-derived, differently perhaps, on every build.
+semantics in all four outputs. What it costs to do it on every render instead
+depends entirely on which recipe you measure. On this sample the filter adds
+about 8 ms, which is nothing against LuaLaTeX's six seconds and half again the
+whole of an HTML render:
+
+| Recipe         | Without |    With | Overhead |
+|----------------|--------:|--------:|---------:|
+| HTML (MathML)  |   15 ms |   22 ms |      51% |
+| HTML (MathJax) |   14 ms |   22 ms |      58% |
+| Typst PDF      |   43 ms |   49 ms |      15% |
+| LuaLaTeX PDF   | 5975 ms | 6001 ms |       0% |
+
+So the fast recipes are the ones that would pay, and they are the ones a
+preview loop runs. Reviewability is still the better argument: a hand-written
+Unicode segmentation stays out of the render path, and whatever it decided is
+visible in the repository rather than re-derived, differently perhaps, on every
+build.
 
 Pandoc's Typst writer emits `lang` from a span but not `dir`, and drops the
 script subtag, so `zh-Hant` reaches Typst as `zh`. Neither loses anything here:
