@@ -243,13 +243,31 @@ local transparent = {
   Underline = true,
 }
 
+--- The scripts a whole piece is tied to: what its tied characters have in
+-- common. One untied character is enough to leave it tied to nothing, the same
+-- rule split() applies to a run of text.
+local function narrow(current, value)
+  if current == nil then
+    local copy = {}
+    for script in pairs(value) do copy[script] = true end
+    return copy
+  end
+  for script in pairs(current) do
+    if not value[script] then current[script] = nil end
+  end
+  return current
+end
+
 --- Which run an inline list belongs to, from the text inside it.
 -- Returns the script when everything script-bearing inside is that one mapped
 -- script, nil when there is nothing script-bearing at all, and false when the
 -- list has to stay opaque: another script, prose that is not prose, or a
--- language somebody has already written by hand.
+-- language somebody has already written by hand. A second value carries the
+-- scripts a list of nothing but tied text is tied to, so that an emphasised or
+-- quoted 。 can still join the Han run it touches.
 local function list_script(inlines)
   local found, opaque = nil, false
+  local ties, untied = nil, false
 
   local function scan(items)
     for _, item in ipairs(items) do
@@ -263,10 +281,17 @@ local function list_script(inlines)
             return
           elseif class == "script" then
             found = value
+          elseif class == "tied" then
+            ties = narrow(ties, value)
+          elseif class == "neutral" then
+            untied = true
           end
+          -- An inherited mark goes with its base, so it neither ties the piece
+          -- nor unties it.
         end
       elseif kind == "Space" or kind == "SoftBreak" or kind == "LineBreak" then
         -- Neutral, exactly as at the top level.
+        untied = true
       elseif transparent[kind] and not (kind == "Span" and item.attributes.lang) then
         scan(item.content)
       else
@@ -278,11 +303,10 @@ local function list_script(inlines)
 
   scan(inlines)
   if opaque then return false end
-  return found
-end
-
-local function content_script(inline)
-  return list_script(inline.content)
+  if found then return found end
+  -- Nothing script-bearing in it, so what it has is a tie, if it has one.
+  if untied or not ties or not next(ties) then return nil end
+  return nil, ties
 end
 
 --- Group an inline list, so a run survives what sits inside it.
@@ -371,12 +395,15 @@ local function group(inlines)
         end
       end
     elseif transparent[inline.t] and not (inline.t == "Span" and inline.attributes.lang) then
-      local content = content_script(inline)
+      -- A container of nothing but tied punctuation carries its ties out with
+      -- it, so it reaches a run on either side rather than being read as
+      -- ordinary neutral text.
+      local content, tied = list_script(inline.content)
       if content == false then
         close()
         out:insert(inline)
       else
-        add(inline, content)
+        add(inline, content, tied)
       end
     else
       close()
