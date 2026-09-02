@@ -92,10 +92,11 @@ format:
 
 # Text samples
 
-Every span below was written into this file by `pixi run format`, from lines
-that were typed as plain text. Nothing runs at render time: what the four
-recipes read is the ordinary Pandoc markup checked in here, which is also what
-a reviewer reads in the diff.
+Every span in this section was written into this file by `pixi run format`,
+from lines that were typed as plain text; the one in the next section is the
+hand-written exception, and is there to show what the formatter leaves alone.
+Nothing runs at render time: what the four recipes read is the ordinary Pandoc
+markup checked in here, which is also what a reviewer reads in the diff.
 
 [וַיֹּ֥אמֶר אֱלֹהִים יְהִ֣י א֑וֹר וַֽיְהִי־אֽוֹר׃]{lang="he" dir="rtl"}
 
