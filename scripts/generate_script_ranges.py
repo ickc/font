@@ -92,9 +92,15 @@ def main() -> None:
 
     # Script: the code point's own script.
     strong: dict[str, list[tuple[int, int]]] = {}
+    # Script=Inherited: combining marks and the like, which UAX #24 gives the
+    # script of the character they follow. They are not a script of their own,
+    # so they are kept apart from `strong` rather than added to it.
+    inherited: list[tuple[int, int]] = []
     for low, high, value in records(fetch("Scripts.txt")):
         if value not in NOT_SCRIPTS:
             strong.setdefault(value, []).append((low, high))
+        elif value == "Inherited":
+            inherited.append((low, high))
     names = sorted(strong)
 
     # Script_Extensions: code points that belong with scripts other than the one
@@ -155,6 +161,9 @@ def main() -> None:
         "  strong = {",
         *render_flat(coalesced),
         "  },",
+        "  -- Code points whose Script is Inherited: they take the script of",
+        "  -- the character before them rather than ending its run.",
+        "  " + render("inherited", merge(inherited)).strip(),
         "  -- Code points whose Script_Extensions include this script.",
         "  ext = {",
         *(render(name, merge(extensions[name])) for name in sorted(extensions)),
