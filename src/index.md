@@ -197,7 +197,13 @@ reader, a spell checker and `assets/fonts.css` all read. In LuaLaTeX, babel's
 `\babelprovide[onchar=ids fonts]{hebrew}` switches fonts by script and, with
 `bidi=basic`, sets Hebrew right to left correctly --- verified here against
 these samples --- but it is LuaTeX-only and leaves the other three formats
-untouched. Typst needs no help with fonts at all, for the reason below.
+untouched. `ucharclasses` under XeLaTeX and `luaucharclasses` under LuaLaTeX
+are the closest analogue to `bin/auto-lang.lua` itself: the same walk over the
+text, acting wherever it changes writing system. They act by Unicode block
+rather than by the Script property, on every typesetting run rather than once
+on the source, and what they switch is a font rather than a language --- so
+again, two formats out of four, and nothing a spell checker or a screen reader
+can read. Typst needs no help with fonts at all, for the reason below.
 
 Doing it once, in the source, is what makes one set of sources produce the same
 semantics in all four outputs. What it costs to do it on every render instead

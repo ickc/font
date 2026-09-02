@@ -1,4 +1,17 @@
 --[[
+The same idea as ucharclasses under XeLaTeX, or luaucharclasses under LuaLaTeX:
+walk the text, notice where it changes writing system, and act at the boundary.
+Three things differ. It is a pandoc Lua filter, so the one answer serves all
+four output formats rather than only the TeX ones. It runs once over the source
+instead of on every typesetting run, so what it decided is in the repository to
+be read and corrected rather than re-derived invisibly on each build. And what
+it emits at a boundary is a language -- `lang`, and `dir` where the script is
+right to left -- which a font, a hyphenator, a spell checker and a screen reader
+can each act on, rather than a font switch, which only the first can. It also
+segments by the Script and Script_Extensions properties rather than by Unicode
+block as ucharclasses does, so Greek and Coptic are not one class and CJK
+punctuation follows the text it punctuates.
+
 Loaded by bin/md_formatter.py, so it rewrites the source rather than each
 render. Neither Quarto nor the vanilla Pandoc recipes know about it.
 
