@@ -1,0 +1,140 @@
+/* Every @font-face this site serves, and nothing else.
+
+   This is the entry point for another site: it declares the families and the
+   files they load, and asserts nothing about what anything on the page is set
+   in. `fonts.css` is this file plus the rules that make *this* site use them,
+   which a consumer with its own theme does not want.
+
+   The `url()` references are relative, so they resolve against wherever this
+   stylesheet is served from and the .woff2 files follow without being
+   vendored. `font-display: swap` on every face is deliberate: text is readable
+   in a fallback while the face arrives, rather than invisible.
+
+   Noto Sans TC is not here. It comes from Google Fonts, which is a third
+   origin and an unconditional fetch, so it stays in `fonts.css` where a site
+   that renders no Traditional Chinese does not pay for it. A consumer that
+   needs it adds the same @import itself; see the contract in the site
+   documentation. */
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("texgyreschola-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("texgyreschola-bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("texgyreschola-italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola";
+  src: url("texgyreschola-bolditalic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TeX Gyre Schola Math";
+  src: url("texgyreschola-math.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gentium";
+  src: url("Gentium-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gentium";
+  src: url("Gentium-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gentium";
+  src: url("Gentium-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gentium";
+  src: url("Gentium-BoldItalic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ezra SIL";
+  src: url("SILEOT.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("JetBrainsMono-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("JetBrainsMono-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("JetBrainsMono-Italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("JetBrainsMono-BoldItalic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Read by the rules in `fonts.css`, and exported for a consumer that wants the
+   same two choices. Note that reading one costs the fallback stack: an
+   undefined `var()` is invalid at computed-value time, so if this stylesheet
+   never arrives the whole declaration is dropped rather than falling through
+   to the generic family beside it. Name the families directly where that
+   matters. */
+:root {
+  --font-body: "TeX Gyre Schola", serif;
+  --font-code: "JetBrains Mono", monospace;
+}

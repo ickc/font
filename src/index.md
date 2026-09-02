@@ -296,7 +296,7 @@ it for Quarto.
 
 | Consumer | Files |
 |------------------------------------------------------------|------------------------------------------------------------|
-| Both | `src/*.md` content and shared metadata, `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
+| Both | `src/*.md` content and shared metadata, `src/assets/faces.css` and `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `scripts/activate.sh`, font and TeX setup scripts |
 | Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
 
