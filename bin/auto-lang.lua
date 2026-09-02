@@ -136,7 +136,9 @@ local function split(text)
   end
 
   local function drain()
-    for _, item in ipairs(pending) do pieces[#pieces + 1] = { text = item.char } end
+    for _, item in ipairs(pending) do
+      pieces[#pieces + 1] = { text = item.char, tied = item.tied }
+    end
     pending = {}
   end
 
@@ -173,10 +175,13 @@ local function split(text)
   close()
   drain()
 
+  -- Tied text is left as pieces of its own: it may yet belong to a run that
+  -- lives in a neighbouring inline, which only group() can see.
   local merged = {}
   for _, piece in ipairs(pieces) do
     local last = merged[#merged]
     if last and not last.script and not piece.script
+      and not last.tied and not piece.tied
       and last.foreign == piece.foreign then
       last.text = last.text .. piece.text
     else
@@ -252,13 +257,25 @@ local function group(inlines)
   local out, run, script, pending = pandoc.Inlines({}), {}, nil, {}
   local changed = false
 
+  -- `pending` holds what has been read since the run last took anything, each
+  -- entry with the scripts Script_Extensions ties it to. Carrying that here
+  -- rather than only inside split() is what lets tied text reach a run on the
+  -- far side of an inline boundary: `*神說*` and a following `。` are one Han
+  -- run, and so are `。` and a following `*神說*`.
   local function flush()
-    for _, item in ipairs(pending) do out:insert(item) end
+    for _, item in ipairs(pending) do out:insert(item.inline) end
     pending = {}
   end
 
   local function close()
     if script then
+      local tied = 0
+      while pending[tied + 1] and pending[tied + 1].tied
+        and pending[tied + 1].tied[script] do
+        tied = tied + 1
+      end
+      for index = 1, tied do run[#run + 1] = pending[index].inline end
+      for _ = 1, tied do table.remove(pending, 1) end
       out:insert(span(script, pandoc.Inlines(run)))
       run, script = {}, nil
       changed = true
@@ -266,18 +283,30 @@ local function group(inlines)
     flush()
   end
 
-  local function add(inline, piece_script)
+  local function add(inline, piece_script, tied)
     if not piece_script then
-      if script then pending[#pending + 1] = inline else out:insert(inline) end
+      pending[#pending + 1] = { inline = inline, tied = tied }
       return
     end
-    if script and script ~= piece_script then close() end
-    if not script then
-      flush()
-      script = piece_script
+    if script == piece_script then
+      for _, item in ipairs(pending) do run[#run + 1] = item.inline end
+      pending = {}
+      run[#run + 1] = inline
+      return
     end
-    for _, item in ipairs(pending) do run[#run + 1] = item end
-    pending = {}
+    -- Another script's run, or the first one: the tied text at the end of what
+    -- is pending belongs to it rather than to whatever came before.
+    local first = #pending + 1
+    while pending[first - 1] and pending[first - 1].tied
+      and pending[first - 1].tied[piece_script] do
+      first = first - 1
+    end
+    local carried = {}
+    for index = first, #pending do carried[#carried + 1] = pending[index].inline end
+    for _ = first, #pending do table.remove(pending) end
+    close()
+    script = piece_script
+    for _, item in ipairs(carried) do run[#run + 1] = item end
     run[#run + 1] = inline
   end
 
@@ -290,7 +319,7 @@ local function group(inlines)
           close()
           out:insert(pandoc.Str(piece.text))
         else
-          add(pandoc.Str(piece.text), piece.script)
+          add(pandoc.Str(piece.text), piece.script, piece.tied)
         end
       end
     elseif transparent[inline.t] and not (inline.t == "Span" and inline.attributes.lang) then
