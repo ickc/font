@@ -166,9 +166,59 @@ local function span(script, inlines)
   return pandoc.Span(inlines, pandoc.Attr("", {}, attributes))
 end
 
---- Group an inline list, so a run survives the Space elements inside it.
--- Anything that is not a Str or ordinary whitespace ends the run: emphasis, a
--- link, inline code. Their own inline lists are visited in their own right.
+-- Inline containers that carry nothing of their own, so what is inside them
+-- decides which run they belong to. Note is deliberately absent: its content
+-- is a separate flow, and absorbing it would stop the filter descending into
+-- it. Code, maths and raw inlines are absent because their text is not prose.
+local transparent = {
+  Emph = true, Link = true, Quoted = true, SmallCaps = true, Span = true,
+  Strikeout = true, Strong = true, Subscript = true, Superscript = true,
+  Underline = true,
+}
+
+--- Which run a container belongs to, from the text inside it.
+-- Returns the script when everything script-bearing inside is that one mapped
+-- script, nil when there is nothing script-bearing at all, and false when the
+-- container has to stay opaque: another script, prose that is not prose, or a
+-- language somebody has already written by hand.
+local function content_script(inline)
+  local found, opaque = nil, false
+
+  local function scan(items)
+    for _, item in ipairs(items) do
+      if opaque then return end
+      local kind = item.t
+      if kind == "Str" then
+        for _, codepoint in utf8.codes(item.text) do
+          local class, value = classify(codepoint)
+          if class == "script" and (not mapped[value] or (found and found ~= value)) then
+            opaque = true
+            return
+          elseif class == "script" then
+            found = value
+          end
+        end
+      elseif kind == "Space" or kind == "SoftBreak" or kind == "LineBreak" then
+        -- Neutral, exactly as at the top level.
+      elseif transparent[kind] and not (kind == "Span" and item.attributes.lang) then
+        scan(item.content)
+      else
+        opaque = true
+        return
+      end
+    end
+  end
+
+  scan(inline.content)
+  if opaque then return false end
+  return found
+end
+
+--- Group an inline list, so a run survives what sits inside it.
+-- Spaces keep a run going, and so does a container holding nothing but the
+-- run's own script -- otherwise the fullwidth colon before an emphasised or
+-- quoted Chinese phrase would fall outside the span and lose its font.
+-- Anything else ends the run; its own inline list is visited in its own right.
 local function group(inlines)
   local out, run, script, pending = pandoc.Inlines({}), {}, nil, {}
   local changed = false
@@ -208,6 +258,14 @@ local function group(inlines)
     elseif inline.t == "Str" then
       for _, piece in ipairs(split(inline.text)) do
         add(pandoc.Str(piece.text), piece.script)
+      end
+    elseif transparent[inline.t] and not (inline.t == "Span" and inline.attributes.lang) then
+      local content = content_script(inline)
+      if content == false then
+        close()
+        out:insert(inline)
+      else
+        add(inline, content)
       end
     else
       close()
