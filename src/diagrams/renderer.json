@@ -1,0 +1,17 @@
+{
+  "mermaid-cli": "@mermaid-js/mermaid-cli@11.17.0",
+  "background": "white",
+  "config": {
+    "theme": "neutral",
+    "htmlLabels": false,
+    "flowchart": {
+      "htmlLabels": false,
+      "curve": "basis"
+    },
+    "fontFamily": "TeX Gyre Schola",
+    "themeVariables": {
+      "fontFamily": "TeX Gyre Schola",
+      "fontSize": "16px"
+    }
+  }
+}

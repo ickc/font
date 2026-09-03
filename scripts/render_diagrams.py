@@ -36,12 +36,21 @@ repository, because only one of them costs anything to make:
             ``pre-render``, both by calling ``--pdf`` here, so the typst
             invocation has one definition rather than three.
 
-Each SVG is named for the SHA-1 of its diagram source, which is the whole
+Each SVG is named for the SHA-1 of its diagram source, which is most of the
 staleness story: an edited diagram asks for a name that does not exist yet, and
 ``config/mermaid.lua`` stops the render with a message saying to run this. The
 name is computed from the code block's text as *pandoc* parses it -- the sources
 are read through ``pandoc --to json`` rather than with a regular expression --
 so the two sides cannot disagree about what was hashed.
+
+The rest of the story is that a drawing depends on how it was drawn as well as
+on what it says. The name cannot carry that: ``config/mermaid.lua`` derives the
+same name and knows nothing about the renderer. So the settings below are
+recorded in ``src/diagrams/renderer.json`` beside the drawings, and a change to
+any of them -- the pinned mermaid-cli, the theme, the family, the background --
+makes every checked-in SVG a picture of the old settings. ``--check`` says so
+and this redraws all of them, where hashing the source alone would have called
+them current forever.
 
 Usage:
 
@@ -65,6 +74,10 @@ from typing import Iterator, Sequence
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES = ROOT / "src"
 DIAGRAMS = SOURCES / "diagrams"
+
+# The settings the drawings beside it were made with, written out in full rather
+# than hashed so that `git diff` says what changed. Checked in with them.
+STAMP = DIAGRAMS / "renderer.json"
 
 # Pinned exactly rather than by range: this writes a file that is committed, so
 # a renderer that moved under it would show up as an unexplained redrawing of
@@ -183,6 +196,19 @@ def outdated(svg: Path) -> bool:
     return not pdf.exists() or pdf.stat().st_mtime < svg.stat().st_mtime
 
 
+def settings() -> dict[str, object]:
+    """Everything about *how* a diagram is drawn, as opposed to what it says."""
+    return {"mermaid-cli": MERMAID_CLI, "background": BACKGROUND, "config": CONFIG}
+
+
+def restamped() -> bool:
+    """True when the drawings on disk were made with settings other than these."""
+    try:
+        return json.loads(STAMP.read_text(encoding="utf-8")) != settings()
+    except (OSError, ValueError):
+        return True
+
+
 def wanted() -> dict[str, str]:
     """Every diagram the sources ask for, by artifact name."""
     diagrams: dict[str, str] = {}
@@ -195,7 +221,7 @@ def wanted() -> dict[str, str]:
 def main(argv: Sequence[str] = tuple(sys.argv[1:])) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--check", action="store_true", help="report which SVGs are missing or orphaned, and change nothing")
+    mode.add_argument("--check", action="store_true", help="report which SVGs are missing, orphaned or drawn with old settings, and change nothing")
     mode.add_argument("--pdfs", action="store_true", help="derive every PDF from its checked-in SVG; needs no browser")
     mode.add_argument("--pdf", metavar="SVG", type=Path, help="derive one PDF from one SVG, for the Makefile's pattern rule")
     args = parser.parse_args(argv)
@@ -209,20 +235,34 @@ def main(argv: Sequence[str] = tuple(sys.argv[1:])) -> int:
     DIAGRAMS.mkdir(exist_ok=True)
     diagrams = wanted()
 
+    # A drawing made with different settings is as stale as one made from a
+    # different source, and its name does not say so -- the name is the hash of
+    # the source alone, because `config/mermaid.lua` derives the same name and
+    # cannot know about any of this. So every SVG is stale at once when the
+    # stamp beside them does not match, and every one is redrawn.
+    stale = restamped()
+
     # Only the SVGs are compared against the sources. A PDF never reaches the
     # repository, so it is neither something that can be missing nor something
     # that can be orphaned -- it is just rebuilt from whichever SVGs remain.
-    missing = [name for name in diagrams if not (DIAGRAMS / f"{name}.svg").exists()]
+    missing = [name for name in diagrams if stale or not (DIAGRAMS / f"{name}.svg").exists()]
     # An SVG whose diagram was edited or deleted keeps answering to its old name
     # forever unless it is swept, and nothing else would ever notice it.
     orphans = sorted(p for p in DIAGRAMS.glob("*.svg") if p.stem not in diagrams)
 
     if args.check:
-        for name in missing:
-            print(f"missing: {name}.svg", file=sys.stderr)
+        if stale:
+            print(
+                f"stale renderer: {STAMP.relative_to(ROOT)} is missing or does not"
+                " match this script's settings, so every drawing is one of the old ones",
+                file=sys.stderr,
+            )
+        else:
+            for name in missing:
+                print(f"missing: {name}.svg", file=sys.stderr)
         for path in orphans:
             print(f"orphaned: {path.relative_to(ROOT)}", file=sys.stderr)
-        if missing or orphans:
+        if stale or missing or orphans:
             print("Run `pixi run render-diagrams`.", file=sys.stderr)
             return 1
         print(f"All {len(diagrams)} diagrams are rendered.")
@@ -236,6 +276,10 @@ def main(argv: Sequence[str] = tuple(sys.argv[1:])) -> int:
             print(f"removing {path.relative_to(ROOT)}")
             path.unlink()
             path.with_suffix(".pdf").unlink(missing_ok=True)
+        # Last, so that an interrupted or failed run leaves the stamp saying the
+        # drawings are the old ones -- which is true, and which the next
+        # `--check` will say -- rather than claiming a redraw that did not finish.
+        STAMP.write_text(json.dumps(settings(), indent=2) + "\n", encoding="utf-8")
 
     derived = [svg for svg in sorted(DIAGRAMS.glob("*.svg")) if outdated(svg)]
     for svg in derived:

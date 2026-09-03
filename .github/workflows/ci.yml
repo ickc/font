@@ -37,10 +37,12 @@ jobs:
       # `pixi run format` produces.
       - run: pixi run format-check
       # Fails when a checked-in drawing does not match the mermaid block it was
-      # rendered from, or when one is left over from a block that is gone.
-      # Drawing one needs a browser, which is why the SVGs are checked in and why
-      # this job only verifies them. It compares names rather than pictures, so
-      # it needs neither a browser nor typst; see scripts/render_diagrams.py.
+      # rendered from, when one is left over from a block that is gone, or when
+      # the renderer settings moved out from under all of them. Drawing one needs
+      # a browser and Node, which is why the SVGs are checked in and why this job
+      # only verifies them: it compares names and a recorded settings file rather
+      # than pictures, so it runs in the default environment with neither. See
+      # scripts/render_diagrams.py.
       - run: pixi run render-diagrams-check
 
   build:

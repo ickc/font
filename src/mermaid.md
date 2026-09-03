@@ -252,6 +252,28 @@ never disagree about what was hashed. `pixi run render-diagrams` also sweeps
 drawings no source asks for any more, which is the only thing that would
 otherwise accumulate.
 
+### What the name cannot carry
+
+A drawing depends on how it was drawn as well as on what it says, and the name
+cannot say so: it is the hash of the diagram source alone, because
+`config/mermaid.lua` derives the same name from the same string and knows
+nothing about the renderer. Change the pinned mermaid-cli, the theme, the family
+or the background, and every checked-in SVG becomes a picture of the old
+settings while still answering to the name the filter asks for.
+
+So the settings are written out beside the drawings, in
+`src/diagrams/renderer.json`, and compared rather than assumed. When they differ,
+every diagram is stale at once --- `render-diagrams` redraws all of them and
+`render-diagrams-check` fails:
+
+    stale renderer: src/diagrams/renderer.json is missing or does not match
+    this script's settings, so every drawing is one of the old ones
+    Run `pixi run render-diagrams`.
+
+The file is written last, after the drawing is done, so an interrupted run
+leaves it saying what is true --- that the pictures on disk are still the old
+ones.
+
 ## The colours are fixed, and the plate is white
 
 An SVG's colours are decided when it is drawn. This site has a light theme and a

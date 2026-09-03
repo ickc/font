@@ -357,8 +357,11 @@ gitignored and built, by a pattern rule in the `Makefile` and by `_quarto.yml`'s
 
 What that trade normally costs is staleness, and it does not here --- each SVG is
 named for the SHA-1 of its diagram source, so an edited diagram asks for a file
-that does not exist and the render stops. CI's `pixi run render-diagrams-check`
-catches the same thing without a browser.
+that does not exist and the render stops. A picture also depends on *how* it was
+drawn, which no name derived from the source alone can carry, so the renderer's
+own settings are recorded beside the drawings in `src/diagrams/renderer.json`
+and changing any of them marks all of them stale at once. CI's
+`pixi run render-diagrams-check` catches both without a browser.
 
 The Quarto-native pattern writes no filter and keeps no artifacts, and pays for
 it in three places: the page is absent from the Makefile's four outputs and from
