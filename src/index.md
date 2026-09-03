@@ -98,9 +98,17 @@ same four artifacts into `pandoc-output/`.
 
 ``` sh
 pixi run setup
+pixi run setup-chrome
 pixi run build
 pixi run pandoc-build
 ```
+
+`setup-chrome` is the second one-time step, and it is separate from `setup`
+because it is a 262 MB download that only `src/mermaid-quarto.qmd` needs ---
+Quarto draws that page's diagrams in a headless browser. `build` renders every
+page, though, so a whole-site build does need it, and without it the render
+stops at `Chrome not found`. A copy of this repository that drops that one page
+from `_quarto.yml` needs no browser anywhere.
 
 `setup` is an explicit, one-time machine setup. It installs desktop fonts
 directly into the conventional per-user font directory

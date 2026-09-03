@@ -22,10 +22,16 @@ which tool, where each font comes from, and how to add a document — is
 [`src/index.md`](src/index.md), which renders as the site homepage.
 
 ```sh
-pixi run setup   # one-time: install desktop fonts and TeX support
-pixi run build   # Quarto site into src/docs/
-pixi run serve   # preview it
+pixi run setup         # one-time: install desktop fonts and TeX support
+pixi run setup-chrome  # one-time: the headless browser the Quarto-native page needs
+pixi run build         # Quarto site into src/docs/
+pixi run serve         # preview it
 ```
+
+`setup-chrome` is a separate step because it is a 262 MB download that only
+[`src/mermaid-quarto.qmd`][diagram-quarto] needs. It is not optional for a whole-site
+build, though: `build` renders every page, so without it the render stops at
+`Chrome not found`.
 
 [multilingual]: https://font.kolen.dev/multilingual.html
 [mathematics]: https://font.kolen.dev/math.html

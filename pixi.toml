@@ -40,10 +40,12 @@ render-diagrams-check = { cmd = "python scripts/render_diagrams.py --check", des
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
 
 # Only src/mermaid-quarto.qmd needs this, and only because Quarto draws its
-# native mermaid diagrams in a headless browser. It is a ~260 MB download, so it
-# is deliberately not part of `setup`: the other diagram pattern needs no
-# browser to build, and a checkout that renders neither page needs none either.
-# Without it that one page stops with "Chrome not found" and names this task.
+# native mermaid diagrams in a headless browser -- but `pixi run build` renders
+# every page, so a whole-site build needs it too and stops at "Chrome not found"
+# without it. It is a ~260 MB download that the other diagram pattern does not
+# need at all, so rather than fold it into `setup` for everyone it is named as
+# its own step in the quick start, in README.md and src/index.md. A checkout
+# that drops that one page from `_quarto.yml` needs no browser anywhere.
 setup-chrome = { cmd = "quarto install chrome-headless-shell --no-prompt", description = "Install the headless browser Quarto renders native mermaid with" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
