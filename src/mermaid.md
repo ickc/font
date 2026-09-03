@@ -92,6 +92,8 @@ directly; this one explains how eight renderings are reached.
 
 ``` mermaid
 flowchart LR
+  accTitle: One Markdown source rendered eight ways
+  accDescr: src/name.md is read by both Quarto and Pandoc with the Makefile, and each of the two produces the same four outputs: a MathML HTML page, a MathJax HTML page, a LuaLaTeX PDF and a Typst PDF.
   MD["src/name.md"]
 
   MD --> Q["Quarto"]
@@ -233,6 +235,8 @@ appears in:
 
 ``` mermaid
 flowchart TB
+  accTitle: How a diagram's artifacts are named
+  accDescr: The fenced mermaid block is hashed with SHA-1 into the name mermaid-hash. That name is the checked-in drawing, mermaid-hash.svg, from which typst derives mermaid-hash.pdf.
   SRC["fenced mermaid block"] -- SHA-1 --> NAME["mermaid-hash"]
   NAME --> SVG["mermaid-hash.svg"]
   SVG -- typst --> PDF["mermaid-hash.pdf"]
@@ -273,6 +277,17 @@ every diagram is stale at once --- `render-diagrams` redraws all of them and
 The file is written last, after the drawing is done, so an interrupted run
 leaves it saying what is true --- that the pictures on disk are still the old
 ones.
+
+### The labels are not the whole picture
+
+Each diagram carries `accTitle` and `accDescr`, which mermaid writes into the
+SVG as a `<title>` and a `<desc>` the root element references through
+`aria-labelledby` and `aria-describedby`. That is what a screen reader reads
+instead of an unnamed graphic, and it is worth more here than usual: the
+diagrams are *inlined* into the page rather than referenced through an `<img>`,
+so there is no `alt` attribute anywhere to carry it. Mermaid scopes both ids to
+the `--svgId` it is given, which is the artifact name, so two diagrams inlined
+into one page do not collide.
 
 ## The colours are fixed, and the plate is white
 

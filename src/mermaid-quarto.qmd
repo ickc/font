@@ -89,6 +89,8 @@ what you get back.
 ```{mermaid}
 %%{init: {"theme": "neutral", "themeVariables": {"fontFamily": "TeX Gyre Schola"}} }%%
 flowchart LR
+  accTitle: One Quarto source rendered four ways
+  accDescr: src/name.qmd is read by Quarto, which writes name.html and name-mathjax.html directly, and name-lualatex.pdf and name-typst.pdf through headless Chrome.
   SRC["src/name.qmd"] --> Q["Quarto"]
 
   Q --> H["name.html"]
