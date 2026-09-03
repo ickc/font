@@ -32,7 +32,10 @@ generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", des
 # Only the SVG each of these draws is checked in. The PDF that LuaLaTeX reads is
 # derived from it by typst -- by the Makefile's pattern rule on one side and
 # `_quarto.yml`'s `pre-render` on the other -- so it needs no task here.
-render-diagrams = { cmd = "python scripts/render_diagrams.py", description = "Draw each mermaid block into src/diagrams/ (needs npx and Chrome)" }
+#
+# `render-diagrams` itself lives in the `diagrams` feature below, because it is
+# the one task here that needs Node. This one does not: it compares names, and
+# needs only pandoc.
 render-diagrams-check = { cmd = "python scripts/render_diagrams.py --check", description = "Fail if a drawn diagram is missing or orphaned. Primarily for CI." }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
 
@@ -75,3 +78,24 @@ pandoc-build = { cmd = "make all", description = "Render four vanilla Pandoc art
 
 linkcheck = { cmd = "lychee --no-ignore --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links in the rendered site via lychee" }
 linkcheck-except-429 = { cmd = "lychee --no-ignore --accept '100..=299, 429' --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links via lychee, accepting 429 (too many requests). Primarily for CI." }
+
+# Drawing a diagram is the only thing in this repository that needs Node: mermaid
+# has no renderer that is not a browser, and mermaid-cli is fetched with `npx`.
+# It is kept out of the default environment rather than declared beside pandoc
+# because the SVGs it draws are checked in -- so building the site, checking the
+# drawings, and CI all need neither Node nor a browser, which is the whole point
+# of committing them. Declared here rather than left to the host so that the
+# task is reproducible in a clean checkout: `pixi run render-diagrams` selects
+# this environment on its own, because the task exists only in it.
+[feature.diagrams.dependencies]
+# Bounded rather than `*`, unlike every dependency above, because conda-forge
+# ships prereleases here: unconstrained, this resolves to a 26.x alpha whose
+# bundled npm refuses to run on it ("npm v11 does not support Node.js
+# v26.8.0-alpha"). The floor is the version npm itself asks for.
+nodejs = ">=22.9,<26"
+
+[feature.diagrams.tasks]
+render-diagrams = { cmd = "python scripts/render_diagrams.py", description = "Draw each mermaid block into src/diagrams/ (needs Chrome; brings its own Node)" }
+
+[environments]
+diagrams = ["diagrams"]
