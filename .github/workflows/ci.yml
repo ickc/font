@@ -36,6 +36,14 @@ jobs:
       # Fails when a Markdown source is not in the canonical form
       # `pixi run format` produces.
       - run: pixi run format-check
+      # Fails when a checked-in drawing does not match the mermaid block it was
+      # rendered from, when one is left over from a block that is gone, or when
+      # the renderer settings moved out from under all of them. Drawing one needs
+      # a browser and Node, which is why the SVGs are checked in and why this job
+      # only verifies them: it compares names and a recorded settings file rather
+      # than pictures, so it runs in the default environment with neither. See
+      # scripts/render_diagrams.py.
+      - run: pixi run render-diagrams-check
 
   build:
     name: Build and check links
@@ -53,6 +61,11 @@ jobs:
         with:
           package-file: .github/tl_packages
       - run: pixi run setup
+      # src/mermaid-quarto.qmd draws its diagrams in a headless browser Quarto
+      # installs itself, and without it that page stops the whole render at
+      # "Chrome not found". This is the cost of the Quarto-native pattern; the
+      # Lua filter pattern beside it needs no browser here.
+      - run: pixi run setup-chrome
       - run: pixi run build
       # Quarto prints only the first few lines of a LaTeX failure, which is rarely
       # the line that explains it.

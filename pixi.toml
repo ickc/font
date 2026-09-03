@@ -29,7 +29,24 @@ download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", descript
 download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
 download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
 generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate bin/script-ranges.lua from the Unicode Character Database" }
+# Only the SVG each of these draws is checked in. The PDF that LuaLaTeX reads is
+# derived from it by typst -- by the Makefile's pattern rule on one side and
+# `_quarto.yml`'s `pre-render` on the other -- so it needs no task here.
+#
+# `render-diagrams` itself lives in the `diagrams` feature below, because it is
+# the one task here that needs Node. This one does not: it compares names, and
+# needs only pandoc.
+render-diagrams-check = { cmd = "python scripts/render_diagrams.py --check", description = "Fail if a drawn diagram is missing or orphaned. Primarily for CI." }
 setup-tex-support = { cmd = "python scripts/install_tex_support.py", description = "Stage selnolig for minimal system TeX Live installations" }
+
+# Only src/mermaid-quarto.qmd needs this, and only because Quarto draws its
+# native mermaid diagrams in a headless browser -- but `pixi run build` renders
+# every page, so a whole-site build needs it too and stops at "Chrome not found"
+# without it. It is a ~260 MB download that the other diagram pattern does not
+# need at all, so rather than fold it into `setup` for everyone it is named as
+# its own step in the quick start, in README.md and src/index.md. A checkout
+# that drops that one page from `_quarto.yml` needs no browser anywhere.
+setup-chrome = { cmd = "quarto install chrome-headless-shell --no-prompt", description = "Install the headless browser Quarto renders native mermaid with" }
 setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "One-time local font and TeX support setup" }
 
 # Round-trips each source through pandoc so the checked-in Markdown is what
@@ -37,6 +54,12 @@ setup = { depends-on = ["download-fonts", "setup-tex-support"], description = "O
 # would reach into Quarto's `.quarto` cache and its `docs` output. The three
 # table extensions are switched off because their writers reformat this
 # project's pipe tables into far wider simple or multiline tables.
+#
+# `src/*.qmd` is excluded for a different reason than tidiness. This round trip
+# rewrites each file through pandoc, and pandoc misparses a Quarto executable
+# cell -- a ``` {mermaid} ``` block collapses into one inline code span -- so
+# formatting src/mermaid-quarto.qmd would corrupt it. That page is outside this
+# task and outside CI's `format-check` as a result.
 format = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/auto-lang.lua -t 'markdown-simple_tables-multiline_tables-grid_tables'", description = "Normalise every Markdown source through pandoc" }
 format-check = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/auto-lang.lua -t 'markdown-simple_tables-multiline_tables-grid_tables' --check", description = "Fail if any Markdown source is not formatted. Primarily for CI." }
 
@@ -57,3 +80,24 @@ pandoc-build = { cmd = "make all", description = "Render four vanilla Pandoc art
 
 linkcheck = { cmd = "lychee --no-ignore --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links in the rendered site via lychee" }
 linkcheck-except-429 = { cmd = "lychee --no-ignore --accept '100..=299, 429' --exclude-loopback --max-redirects 10 --root-dir $PIXI_PROJECT_ROOT/src/docs -v src/docs", depends-on = ["build"], description = "Check links via lychee, accepting 429 (too many requests). Primarily for CI." }
+
+# Drawing a diagram is the only thing in this repository that needs Node: mermaid
+# has no renderer that is not a browser, and mermaid-cli is fetched with `npx`.
+# It is kept out of the default environment rather than declared beside pandoc
+# because the SVGs it draws are checked in -- so building the site, checking the
+# drawings, and CI all need neither Node nor a browser, which is the whole point
+# of committing them. Declared here rather than left to the host so that the
+# task is reproducible in a clean checkout: `pixi run render-diagrams` selects
+# this environment on its own, because the task exists only in it.
+[feature.diagrams.dependencies]
+# Bounded rather than `*`, unlike every dependency above, because conda-forge
+# ships prereleases here: unconstrained, this resolves to a 26.x alpha whose
+# bundled npm refuses to run on it ("npm v11 does not support Node.js
+# v26.8.0-alpha"). The floor is the version npm itself asks for.
+nodejs = ">=22.9,<26"
+
+[feature.diagrams.tasks]
+render-diagrams = { cmd = "python scripts/render_diagrams.py", description = "Draw each mermaid block into src/diagrams/ (needs Chrome; brings its own Node)" }
+
+[environments]
+diagrams = ["diagrams"]

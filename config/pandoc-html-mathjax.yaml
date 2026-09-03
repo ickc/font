@@ -10,5 +10,10 @@ html-math-method:
   url: https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml-nofont.js
 include-in-header:
   - ${.}/../src/_extensions/mathjax4/mathjax-schola.html
+# Turns each fenced mermaid block into the picture this writer can read -- for
+# HTML, the SVG inlined into the page, so that its labels resolve against the
+# same @font-face rules the body text does. See config/mermaid.lua.
+filters:
+  - ${.}/mermaid.lua
 css:
   - assets/fonts.css

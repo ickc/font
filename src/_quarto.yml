@@ -3,7 +3,18 @@ project:
   type: website
   output-dir: docs
   render:
+    # `*.qmd` is one file, src/mermaid-quarto.qmd, and it is Quarto-only by
+    # necessity rather than by preference: it holds a mermaid executable cell,
+    # which Quarto accepts only in a .qmd and which vanilla Pandoc misparses.
+    # The Makefile's `src/*.md` glob is what keeps it out of that half.
     - "*.md"
+    - "*.qmd"
+  # LuaLaTeX reads a PDF where every other writer reads the checked-in SVG, and
+  # that PDF is derived rather than committed. This is what derives it, and it
+  # is a project hook rather than a pixi task so that `quarto preview` and a
+  # bare `quarto render` get it too. It needs only typst, and does nothing at
+  # all when the PDFs are already current. See scripts/render_diagrams.py.
+  pre-render: python ../scripts/render_diagrams.py --pdfs
   resources:
     - assets/**
     - _headers
@@ -23,6 +34,10 @@ website:
         text: Multilingual
       - href: math.md
         text: Mathematics
+      - href: mermaid.md
+        text: Diagrams
+      - href: mermaid-quarto.qmd
+        text: Diagrams (Quarto)
     right:
       - icon: github
         href: https://github.com/ickc/font

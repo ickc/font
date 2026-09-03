@@ -1,0 +1,18 @@
+<!-- Quarto only, and only for the native-mermaid pattern: see src/mermaid-quarto.qmd.
+
+     Quarto injects its own stylesheet for the diagrams it renders in the
+     browser, and every label in it reads `font-family: var(--mermaid-font-family)`.
+     That property is set from the Bootstrap theme, so a diagram comes out in the
+     theme's sans-serif stack while the prose beside it is Schola. Naming the
+     family here is what closes that gap.
+
+     It has to be CSS rather than the `%%{init}%%` themeVariables written into
+     the diagram itself. Mermaid puts those in a stylesheet inside the SVG, and
+     Quarto's rule overrides it -- so the directive that does set the face for
+     the PDF renders is silently ineffective here. Both are needed, and neither
+     covers the other. -->
+<style>
+  :root {
+    --mermaid-font-family: "TeX Gyre Schola", serif;
+  }
+</style>
