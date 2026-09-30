@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(os.environ.get("PIXI_PROJECT_ROOT", Path(__file__).resolve().parents[1]))
 DESTINATION = ROOT / ".cache" / "texmf" / "tex" / "luatex" / "selnolig"
 # mirrors.ctan.org redirects to whichever mirror is nearest, and not every one
-# of them presents a chain this Python can verify. install_fonts.py already
+# of them presents a chain this Python can verify. font_pattern already
 # names a fallback for exactly that reason. The redirector stays first, backed
 # by two named mirrors serving the same bytes; all three are verified against
 # the digest below, so a bad one fails over rather than through.
