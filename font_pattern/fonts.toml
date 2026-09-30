@@ -1,0 +1,180 @@
+# Every font this repository can install, pinned. `font-pattern list` prints them.
+#
+# Each font names the files to download -- every one checked against its SHA-256,
+# with mirrors tried in order -- and then what to do with them:
+#
+#   install   copied into the desktop font directory (`--dir`), where Typst,
+#             LuaLaTeX and desktop applications find them.
+#   stage     copied into the browser font directory (`--web-dir`), and only when
+#             one is given. A target ending in .woff2 from a source that is not
+#             WOFF2 is recompressed into it with fontTools.
+#
+# An entry is either a downloaded file's name, or `archive.zip!member/path` for a
+# file inside a downloaded zip. A string keeps the file's own name; a table
+# `{ from = ..., as = ... }` renames it.
+#
+# A font's licence is installed and staged beside it, because the licences these
+# fonts come under require the text to travel with the files.
+
+[fonts.tex-gyre-schola]
+description = "TeX Gyre Schola, from CTAN (GUST Font License)"
+downloads = [
+  { name = "GUST-FONT-LICENSE.txt", sha256 = "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/doc/GUST-FONT-LICENSE.txt",
+    "https://tex.org.uk/fonts/tex-gyre/doc/GUST-FONT-LICENSE.txt",
+  ] },
+  { name = "texgyreschola-regular.otf", sha256 = "935b82e25f56b1d1276ca82793205e8ce254fbb37ebd38bedf7388cef21fbf44", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyreschola-regular.otf",
+    "https://tex.org.uk/fonts/tex-gyre/opentype/texgyreschola-regular.otf",
+  ] },
+  { name = "texgyreschola-bold.otf", sha256 = "988c7b2a0ff0eae77d1df3338751b3c47a5e759117734a375b8e7f9de80e698b", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyreschola-bold.otf",
+    "https://tex.org.uk/fonts/tex-gyre/opentype/texgyreschola-bold.otf",
+  ] },
+  { name = "texgyreschola-italic.otf", sha256 = "2f45b8c394037951aaec73d947f0b0c3af715950f8f207c9f4290ba37a53a4d2", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyreschola-italic.otf",
+    "https://tex.org.uk/fonts/tex-gyre/opentype/texgyreschola-italic.otf",
+  ] },
+  { name = "texgyreschola-bolditalic.otf", sha256 = "95f085da44c04817771f2a3a754b6eeb442b9a79e79f51dc3b0612e3cc0d75cc", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/opentype/texgyreschola-bolditalic.otf",
+    "https://tex.org.uk/fonts/tex-gyre/opentype/texgyreschola-bolditalic.otf",
+  ] },
+]
+install = [
+  "texgyreschola-regular.otf",
+  "texgyreschola-bold.otf",
+  "texgyreschola-italic.otf",
+  "texgyreschola-bolditalic.otf",
+  "GUST-FONT-LICENSE.txt",
+]
+stage = [
+  { from = "texgyreschola-regular.otf", as = "texgyreschola-regular.woff2" },
+  { from = "texgyreschola-bold.otf", as = "texgyreschola-bold.woff2" },
+  { from = "texgyreschola-italic.otf", as = "texgyreschola-italic.woff2" },
+  { from = "texgyreschola-bolditalic.otf", as = "texgyreschola-bolditalic.woff2" },
+  "GUST-FONT-LICENSE.txt",
+]
+
+[fonts.tex-gyre-schola-math]
+description = "TeX Gyre Schola Math, from CTAN (GUST Font License)"
+downloads = [
+  { name = "GUST-FONT-LICENSE.txt", sha256 = "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/doc/GUST-FONT-LICENSE.txt",
+    "https://tex.org.uk/fonts/tex-gyre/doc/GUST-FONT-LICENSE.txt",
+  ] },
+  { name = "texgyreschola-math.otf", sha256 = "fa33e0bc72f97c32ac1e943ea6a5a5a56c956ba54eb40e8904045800dae32304", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre-math/opentype/texgyreschola-math.otf",
+    "https://tex.org.uk/fonts/tex-gyre-math/opentype/texgyreschola-math.otf",
+  ] },
+]
+install = ["texgyreschola-math.otf", "GUST-FONT-LICENSE.txt"]
+stage = [
+  { from = "texgyreschola-math.otf", as = "texgyreschola-math.woff2" },
+  "GUST-FONT-LICENSE.txt",
+]
+
+# Pinned to a commit, not to `main`: the hashes below are fixed, so any upstream
+# commit touching either font or the licence would make every install fail with
+# no mirror to fall back on. This commit carries the Sans2.004 font files and the
+# SIL OFL 1.1 relicensing. Nothing is staged: browsers get Noto Sans TC from
+# Google Fonts.
+[fonts.noto-cjk-tc]
+description = "Noto Sans CJK TC, Regular and Bold (SIL OFL 1.1); browser output uses Google Fonts"
+downloads = [
+  { name = "NotoSansCJKtc-Regular.otf", sha256 = "dce08bd4fd91aa8aa76ed8fea4b694c2dfb8550f67871e326843212ddbeb88b4", urls = [
+    "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf",
+  ] },
+  { name = "NotoSansCJKtc-Bold.otf", sha256 = "3ee160e5015106e3ec1a394301df54fa9bbbf8a251519984aec5c0abc50840c0", urls = [
+    "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Bold.otf",
+  ] },
+  { name = "Noto-CJK-LICENSE.txt", sha256 = "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2", urls = [
+    "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/LICENSE",
+  ] },
+]
+install = ["NotoSansCJKtc-Regular.otf", "NotoSansCJKtc-Bold.otf", "Noto-CJK-LICENSE.txt"]
+
+[fonts.gentium]
+description = "Gentium 7.000, with SIL's official WOFF2 files (SIL OFL 1.1)"
+downloads = [
+  { name = "Gentium-7.000.zip", sha256 = "313e64963ba27851356060a725d36ce01680e5c5c63f46e4b40f15741c043e21", urls = [
+    "https://software.sil.org/downloads/r/gentium/Gentium-7.000.zip",
+  ] },
+]
+install = [
+  "Gentium-7.000.zip!Gentium-7.000/Gentium-Regular.ttf",
+  "Gentium-7.000.zip!Gentium-7.000/Gentium-Bold.ttf",
+  "Gentium-7.000.zip!Gentium-7.000/Gentium-Italic.ttf",
+  "Gentium-7.000.zip!Gentium-7.000/Gentium-BoldItalic.ttf",
+  { from = "Gentium-7.000.zip!Gentium-7.000/OFL.txt", as = "Gentium-OFL.txt" },
+]
+stage = [
+  "Gentium-7.000.zip!Gentium-7.000/web/Gentium-Regular.woff2",
+  "Gentium-7.000.zip!Gentium-7.000/web/Gentium-Bold.woff2",
+  "Gentium-7.000.zip!Gentium-7.000/web/Gentium-Italic.woff2",
+  "Gentium-7.000.zip!Gentium-7.000/web/Gentium-BoldItalic.woff2",
+  { from = "Gentium-7.000.zip!Gentium-7.000/OFL.txt", as = "Gentium-OFL.txt" },
+]
+
+# SIL ships this face as WOFF, the only one of the staged faces without a WOFF2
+# alongside it. Every browser that can render the site reads WOFF2, and
+# recompressing the official web build into it takes about a quarter off the
+# transfer -- the same tables in a smaller container, which is the step the TeX
+# Gyre faces already go through from OTF.
+[fonts.ezra-sil]
+description = "Ezra SIL 2.51, with its official web font recompressed to WOFF2 (SIL OFL 1.1)"
+downloads = [
+  { name = "EzraSIL-2.51-web.zip", sha256 = "7c19544c173c91e6ac47f605dae2cfa7e61e428abdafe27cf3f225fec4406357", urls = [
+    "https://software.sil.org/downloads/r/ezra/EzraSIL-2.51-web.zip",
+  ] },
+]
+install = [
+  "EzraSIL-2.51-web.zip!EzraSIL-2.51-web/SILEOT.ttf",
+  { from = "EzraSIL-2.51-web.zip!EzraSIL-2.51-web/Licenses.txt", as = "EzraSIL-Licenses.txt" },
+]
+stage = [
+  { from = "EzraSIL-2.51-web.zip!EzraSIL-2.51-web/web/SILEOT.woff", as = "SILEOT.woff2" },
+  { from = "EzraSIL-2.51-web.zip!EzraSIL-2.51-web/Licenses.txt", as = "EzraSIL-Licenses.txt" },
+]
+
+[fonts.jetbrains-mono]
+description = "JetBrains Mono 2.304, with its official WOFF2 files (SIL OFL 1.1)"
+downloads = [
+  { name = "JetBrainsMono-2.304.zip", sha256 = "6f6376c6ed2960ea8a963cd7387ec9d76e3f629125bc33d1fdcd7eb7012f7bbf", urls = [
+    "https://github.com/JetBrains/JetBrainsMono/releases/download/v2.304/JetBrainsMono-2.304.zip",
+  ] },
+  { name = "JetBrainsMono-OFL.txt", sha256 = "30f0c136e3c88e422d0791acd97238870f9054a9729bc34cf2ff0d4ed8cac4ad", urls = [
+    "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/v2.304/OFL.txt",
+  ] },
+]
+install = [
+  "JetBrainsMono-2.304.zip!fonts/ttf/JetBrainsMono-Regular.ttf",
+  "JetBrainsMono-2.304.zip!fonts/ttf/JetBrainsMono-Bold.ttf",
+  "JetBrainsMono-2.304.zip!fonts/ttf/JetBrainsMono-Italic.ttf",
+  "JetBrainsMono-2.304.zip!fonts/ttf/JetBrainsMono-BoldItalic.ttf",
+  "JetBrainsMono-OFL.txt",
+]
+stage = [
+  "JetBrainsMono-2.304.zip!fonts/webfonts/JetBrainsMono-Regular.woff2",
+  "JetBrainsMono-2.304.zip!fonts/webfonts/JetBrainsMono-Bold.woff2",
+  "JetBrainsMono-2.304.zip!fonts/webfonts/JetBrainsMono-Italic.woff2",
+  "JetBrainsMono-2.304.zip!fonts/webfonts/JetBrainsMono-BoldItalic.woff2",
+  "JetBrainsMono-OFL.txt",
+]
+
+# The desktop OTF files, which are what Typst's `fontawesome` package draws its
+# icons from -- the package Quarto bundles for callout icons in Typst output. It
+# is built against 6.6.0. Desktop only: a site wanting icons in the browser has
+# Font Awesome's own web kit for that.
+[fonts.font-awesome-6]
+description = "Font Awesome 6.6.0 Free, desktop OTF: Free Regular, Free Solid, Brands (SIL OFL 1.1 for the fonts)"
+downloads = [
+  { name = "fontawesome-free-6.6.0-desktop.zip", sha256 = "8cde9bf442f218ee330844263ee35403ff466a1afbbd11ab170523f3cd09067c", urls = [
+    "https://github.com/FortAwesome/Font-Awesome/releases/download/6.6.0/fontawesome-free-6.6.0-desktop.zip",
+  ] },
+]
+install = [
+  "fontawesome-free-6.6.0-desktop.zip!fontawesome-free-6.6.0-desktop/otfs/Font Awesome 6 Free-Regular-400.otf",
+  "fontawesome-free-6.6.0-desktop.zip!fontawesome-free-6.6.0-desktop/otfs/Font Awesome 6 Free-Solid-900.otf",
+  "fontawesome-free-6.6.0-desktop.zip!fontawesome-free-6.6.0-desktop/otfs/Font Awesome 6 Brands-Regular-400.otf",
+  { from = "fontawesome-free-6.6.0-desktop.zip!fontawesome-free-6.6.0-desktop/LICENSE.txt", as = "FontAwesome-LICENSE.txt" },
+]

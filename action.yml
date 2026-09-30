@@ -1,0 +1,86 @@
+# Install pinned fonts from font_pattern/fonts.toml in a GitHub Actions job, and
+# point Typst and LuaLaTeX at them for every later step:
+#
+#   - uses: ickc/font@<commit sha>  # vX
+#     with:
+#       fonts: tex-gyre-schola tex-gyre-schola-math jetbrains-mono font-awesome-6
+#
+# It runs the same installer as this repository's own `pixi run setup`, on the
+# runner's python3 (3.11 or later, for tomllib) and nothing else: desktop fonts
+# need only the standard library. Downloads are cached across runs, keyed on the
+# manifest and the fonts asked for, so a warm run touches no third-party host.
+name: Install pinned fonts
+description: Install pinned, checksum-verified desktop fonts, and point Typst and LuaLaTeX at them.
+author: Kolen Cheung
+branding:
+  icon: type
+  color: gray-dark
+
+inputs:
+  fonts:
+    description: Space-separated font names from font_pattern/fonts.toml (`python -m font_pattern list`), or `all`.
+    required: true
+  dir:
+    description: Where to install them. Defaults to the per-user font directory, which Typst and Fontconfig already search.
+    required: false
+    default: ''
+
+outputs:
+  dir:
+    description: The directory the fonts were installed into.
+    value: ${{ steps.install.outputs.dir }}
+
+runs:
+  using: composite
+  steps:
+    - name: Work out the font directory and cache key
+      id: plan
+      shell: bash
+      env:
+        FONTS: ${{ inputs.fonts }}
+        DIR: ${{ inputs.dir }}
+      run: |
+        if [ -n "$DIR" ]; then
+          # Absolute, so the exported paths still hold for a later step that
+          # runs in another working directory.
+          case "$DIR" in
+            /*) dir="$DIR" ;;
+            *) dir="$PWD/$DIR" ;;
+          esac
+        elif [ "$RUNNER_OS" = macOS ]; then
+          dir="$HOME/Library/Fonts"
+        else
+          dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
+        fi
+        manifest=$(sha256sum "$GITHUB_ACTION_PATH/font_pattern/fonts.toml" 2>/dev/null \
+                   || shasum -a 256 "$GITHUB_ACTION_PATH/font_pattern/fonts.toml")
+        fonts=$(printf '%s\n' $FONTS | sort | tr '\n' ' ')
+        key=$(printf '%s %s' "${manifest%% *}" "$fonts" | (sha256sum 2>/dev/null || shasum -a 256))
+        echo "dir=$dir" >> "$GITHUB_OUTPUT"
+        echo "key=font-pattern-${key%% *}" >> "$GITHUB_OUTPUT"
+
+    - name: Restore the download cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ runner.temp }}/font-pattern-cache
+        key: ${{ steps.plan.outputs.key }}
+
+    - name: Install the fonts
+      id: install
+      shell: bash
+      env:
+        FONTS: ${{ inputs.fonts }}
+        DIR: ${{ steps.plan.outputs.dir }}
+        PYTHONPATH: ${{ github.action_path }}
+      run: |
+        # -P keeps the caller's working directory off sys.path, so a
+        # `font_pattern` of the caller's own cannot shadow this one.
+        # shellcheck disable=SC2086  # FONTS is a space-separated list by design
+        python3 -P -m font_pattern install --dir "$DIR" \
+          --cache-dir "$RUNNER_TEMP/font-pattern-cache" $FONTS
+        echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+        # Typst also searches the per-user directory on its own; naming it
+        # makes a custom `dir` work too. The trailing `//` lets LuaTeX search it
+        # recursively, and the final empty component keeps its default paths.
+        echo "TYPST_FONT_PATHS=$DIR${TYPST_FONT_PATHS:+:$TYPST_FONT_PATHS}" >> "$GITHUB_ENV"
+        echo "OSFONTDIR=$DIR//${OSFONTDIR:+:$OSFONTDIR}:" >> "$GITHUB_ENV"

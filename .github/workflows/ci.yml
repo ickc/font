@@ -45,6 +45,64 @@ jobs:
       # scripts/render_diagrams.py.
       - run: pixi run render-diagrams-check
 
+  action:
+    name: GitHub Action (${{ matrix.os }})
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # The action in action.yml, as another repository would use it, except
+      # from this checkout rather than from a pinned commit.
+      - uses: ./
+        id: fonts
+        with:
+          fonts: tex-gyre-schola tex-gyre-schola-math jetbrains-mono font-awesome-6
+      - name: Check the fonts landed where Typst and LuaLaTeX look
+        shell: bash
+        env:
+          DIR: ${{ steps.fonts.outputs.dir }}
+        run: |
+          for file in texgyreschola-regular.otf texgyreschola-math.otf \
+                      JetBrainsMono-Regular.ttf "Font Awesome 6 Free-Solid-900.otf"; do
+            test -f "$DIR/$file" || { echo "::error::missing $DIR/$file"; exit 1; }
+          done
+          case ":$TYPST_FONT_PATHS:" in
+            *":$DIR:"*) ;;
+            *) echo "::error::TYPST_FONT_PATHS does not name $DIR"; exit 1 ;;
+          esac
+          case "$OSFONTDIR" in
+            "$DIR//"*) ;;
+            *) echo "::error::OSFONTDIR does not start with $DIR//"; exit 1 ;;
+          esac
+      # The point of the whole exercise: Typst finds every family by name. It
+      # never fails on a missing font, only warns and falls back, so the check
+      # is the warning.
+      - uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e # v0.10.2
+        if: runner.os == 'Linux'
+        with:
+          locked: true
+      - name: Check Typst finds the fonts by name
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/fonts.typ" <<'TYP'
+          #set text(font: "TeX Gyre Schola")
+          #show math.equation: set text(font: "TeX Gyre Schola Math")
+          #show raw: set text(font: "JetBrains Mono")
+          Schola, $integral_0^1 x dif x$, `JetBrains Mono`,
+          #text(font: "Font Awesome 6 Free", weight: 900)[\u{f05a}]
+          #text(font: "Font Awesome 6 Brands")[\u{f09b}]
+          TYP
+          pixi run typst compile "$RUNNER_TEMP/fonts.typ" "$RUNNER_TEMP/fonts.pdf" 2>&1 | tee "$RUNNER_TEMP/typst.log"
+          if grep -i "unknown font family" "$RUNNER_TEMP/typst.log"; then
+            echo "::error::Typst could not find a font the action installed"
+            exit 1
+          fi
+
   build:
     name: Build and check links
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork

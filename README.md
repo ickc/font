@@ -17,6 +17,12 @@ The deployed stylesheets are a supported distribution: another site may link
 public and what it promises is [documented on the
 site](https://font.kolen.dev/index.html#using-these-fonts-on-another-site).
 
+The fonts themselves are pinned, checksum-verified downloads listed in
+[`font_pattern/fonts.toml`](font_pattern/fonts.toml). Another project can
+install them with the same code: as the `font-pattern` command, or in GitHub
+Actions with `uses: ickc/font@<commit>` and a `fonts:` list (see
+[`action.yml`](action.yml)).
+
 The full introduction — how the two pipelines are wired, which file belongs to
 which tool, where each font comes from, and how to add a document — is
 [`src/index.md`](src/index.md), which renders as the site homepage.

@@ -120,6 +120,13 @@ applications. The Linux installer refreshes Fontconfig's cache. Pixi also sets
 LuaLaTeX, `OSFONTDIR` exposes the same tree to fontspec; the LuaLaTeX recipes
 use the `NotoSansCJKtc` filename stem so Regular and Bold resolve reliably.
 
+Which fonts exist, the pinned URLs and SHA-256 of every file, and where each
+one goes are data, in `font_pattern/fonts.toml`; `pixi run fonts-list` prints
+them. The installer that reads it, `python -m font_pattern`, needs nothing but
+the standard library to install desktop fonts, so it also serves other
+projects: as the `font-pattern` command, or in GitHub Actions through
+[`action.yml`](#installing-these-fonts-elsewhere).
+
 Browser fonts are staged under `src/assets/`, which publishes them at
 `https://font.kolen.dev/assets/`. The setup also downloads the pinned CTAN
 `selnolig` package into `.cache/texmf`. Pandoc's LuaLaTeX template loads that
@@ -306,7 +313,7 @@ it for Quarto.
 
 | Consumer | Files |
 |------------------------------------------------------------|------------------------------------------------------------|
-| Both | `src/*.md` content and shared metadata, `src/assets/faces.css` and `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `config/mermaid.lua`, `src/diagrams/*.svg`, `scripts/activate.sh`, font and TeX setup scripts |
+| Both | `src/*.md` content and shared metadata, `src/assets/faces.css` and `src/assets/fonts.css`, `config/fonts.typ`, `config/absolute-links.lua`, `config/mermaid.lua`, `src/diagrams/*.svg`, `scripts/activate.sh`, `font_pattern/` and the TeX setup script |
 | Quarto only | `src/_quarto.yml`, each source's `format` map, `src/_extensions/mathjax4/_extension.yml`, `src/_headers`, `src/mermaid-quarto.qmd` and `config/mermaid-schola.html` |
 | Vanilla Pandoc only | `Makefile`, the four `config/pandoc-*.yaml` defaults files |
 
@@ -417,6 +424,11 @@ repository root, where those targets do not exist.
   Stuttgartensia and includes Biblical Hebrew points and cantillation. The
   desktop TTF and official WOFF file are SIL OFL 1.1.
 - JetBrains Mono comes from the official v2.304 release (SIL OFL 1.1).
+- Font Awesome 6.6.0 Free comes from the official desktop release. Its fonts are
+  SIL OFL 1.1 (the icons as SVG and JS are CC BY 4.0). This site does not use
+  it; it is in `font_pattern/fonts.toml` for Typst output elsewhere, whose
+  `fontawesome` package draws icons from these desktop fonts --- Quarto's
+  callout icons among them.
 
 Gentium and Ezra SIL replace SBL Greek and SBL Hebrew. Besides removing the
 non-commercial restriction, the pair has compatible scholarly, calligraphic
@@ -427,6 +439,34 @@ than rebuilding or subsetting it.
 Generated font binaries and documents are ignored by Git. Run `pixi run setup`
 once on a new authoring or deployment machine; subsequent builds reuse the
 installed and staged files.
+
+## Installing these fonts elsewhere
+
+Another project installs any of these fonts with the same installer. Locally,
+as a pinned Python dependency, for example in pixi:
+
+``` toml
+[pypi-dependencies]
+font-pattern = { git = "https://github.com/ickc/font", rev = "<commit>" }
+```
+
+then `font-pattern install tex-gyre-schola jetbrains-mono`, which installs into
+the per-user font directory that Typst and Fontconfig already search. In
+GitHub Actions:
+
+``` yaml
+- uses: ickc/font@<commit>
+  with:
+    fonts: tex-gyre-schola tex-gyre-schola-math jetbrains-mono font-awesome-6
+```
+
+The action runs the installer on the runner's own `python3`, caches the
+downloads across runs keyed on the manifest and the fonts asked for, and
+exports `TYPST_FONT_PATHS` and `OSFONTDIR` for the steps after it. Typst never
+fails on a missing font --- it warns `unknown font family` and sets the text in
+its default instead --- so a build that must not publish in the wrong face
+should fail on that warning; this repository's CI does exactly that for the
+action.
 
 LuaLaTeX itself must be installed by the host TeX Live distribution. Quarto's
 `latex-tinytex: false` selects that host installation, and vanilla Pandoc finds

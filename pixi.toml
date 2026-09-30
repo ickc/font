@@ -21,12 +21,18 @@ env = { QUARTO_PORT = "8017" }
 scripts = ["scripts/activate.sh"]
 
 [tasks]
-download-tex-gyre-schola = { cmd = "python scripts/install_fonts.py tex-gyre-schola", description = "Install TeX Gyre Schola and stage its web fonts" }
-download-tex-gyre-schola-math = { cmd = "python scripts/install_fonts.py tex-gyre-schola-math", description = "Install TeX Gyre Schola Math and stage its web font" }
-download-noto-cjk-tc = { cmd = "python scripts/install_fonts.py noto-cjk-tc", description = "Install Noto Sans CJK TC (web output uses Google Fonts)" }
-download-gentium = { cmd = "python scripts/install_fonts.py gentium", description = "Install Gentium and stage its official WOFF2 files" }
-download-ezra-sil = { cmd = "python scripts/install_fonts.py ezra-sil", description = "Install Ezra SIL and stage its official web font as WOFF2" }
-download-jetbrains-mono = { cmd = "python scripts/install_fonts.py jetbrains-mono", description = "Install JetBrains Mono and stage official WOFF2 files" }
+# The fonts, their pinned URLs and checksums, and where each file goes are in
+# font_pattern/fonts.toml; `pixi run fonts-list` prints them. These tasks install
+# into the per-user font directory and also stage this site's browser fonts.
+# Another project installs the same fonts with the `font-pattern` command or the
+# GitHub Action in action.yml, and without --web-dir.
+fonts-list = { cmd = "python -m font_pattern list", description = "List every font font_pattern/fonts.toml can install" }
+download-tex-gyre-schola = { cmd = "python -m font_pattern install tex-gyre-schola --web-dir src/assets --cache-dir .cache/fonts", description = "Install TeX Gyre Schola and stage its web fonts" }
+download-tex-gyre-schola-math = { cmd = "python -m font_pattern install tex-gyre-schola-math --web-dir src/assets --cache-dir .cache/fonts", description = "Install TeX Gyre Schola Math and stage its web font" }
+download-noto-cjk-tc = { cmd = "python -m font_pattern install noto-cjk-tc --web-dir src/assets --cache-dir .cache/fonts", description = "Install Noto Sans CJK TC (web output uses Google Fonts)" }
+download-gentium = { cmd = "python -m font_pattern install gentium --web-dir src/assets --cache-dir .cache/fonts", description = "Install Gentium and stage its official WOFF2 files" }
+download-ezra-sil = { cmd = "python -m font_pattern install ezra-sil --web-dir src/assets --cache-dir .cache/fonts", description = "Install Ezra SIL and stage its official web font as WOFF2" }
+download-jetbrains-mono = { cmd = "python -m font_pattern install jetbrains-mono --web-dir src/assets --cache-dir .cache/fonts", description = "Install JetBrains Mono and stage official WOFF2 files" }
 download-fonts = { depends-on = ["download-tex-gyre-schola", "download-tex-gyre-schola-math", "download-noto-cjk-tc", "download-gentium", "download-ezra-sil", "download-jetbrains-mono"], description = "One-time installation of every desktop and browser font" }
 generate-script-ranges = { cmd = "python scripts/generate_script_ranges.py", description = "Regenerate bin/script-ranges.lua from the Unicode Character Database" }
 # Only the SVG each of these draws is checked in. The PDF that LuaLaTeX reads is
