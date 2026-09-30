@@ -56,15 +56,22 @@ stage = [
 ]
 
 [fonts.tex-gyre-schola-math]
-description = "TeX Gyre Schola Math, from CTAN (GUST Font License; install tex-gyre-schola for the licence text)"
+description = "TeX Gyre Schola Math, from CTAN (GUST Font License)"
 downloads = [
+  { name = "GUST-FONT-LICENSE.txt", sha256 = "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73", urls = [
+    "https://mirrors.ctan.org/fonts/tex-gyre/doc/GUST-FONT-LICENSE.txt",
+    "https://tex.org.uk/fonts/tex-gyre/doc/GUST-FONT-LICENSE.txt",
+  ] },
   { name = "texgyreschola-math.otf", sha256 = "fa33e0bc72f97c32ac1e943ea6a5a5a56c956ba54eb40e8904045800dae32304", urls = [
     "https://mirrors.ctan.org/fonts/tex-gyre-math/opentype/texgyreschola-math.otf",
     "https://tex.org.uk/fonts/tex-gyre-math/opentype/texgyreschola-math.otf",
   ] },
 ]
-install = ["texgyreschola-math.otf"]
-stage = [{ from = "texgyreschola-math.otf", as = "texgyreschola-math.woff2" }]
+install = ["texgyreschola-math.otf", "GUST-FONT-LICENSE.txt"]
+stage = [
+  { from = "texgyreschola-math.otf", as = "texgyreschola-math.woff2" },
+  "GUST-FONT-LICENSE.txt",
+]
 
 # Pinned to a commit, not to `main`: the hashes below are fixed, so any upstream
 # commit touching either font or the licence would make every install fail with

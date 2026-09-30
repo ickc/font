@@ -41,7 +41,12 @@ runs:
         DIR: ${{ inputs.dir }}
       run: |
         if [ -n "$DIR" ]; then
-          dir="$DIR"
+          # Absolute, so the exported paths still hold for a later step that
+          # runs in another working directory.
+          case "$DIR" in
+            /*) dir="$DIR" ;;
+            *) dir="$PWD/$DIR" ;;
+          esac
         elif [ "$RUNNER_OS" = macOS ]; then
           dir="$HOME/Library/Fonts"
         else
@@ -68,8 +73,10 @@ runs:
         DIR: ${{ steps.plan.outputs.dir }}
         PYTHONPATH: ${{ github.action_path }}
       run: |
+        # -P keeps the caller's working directory off sys.path, so a
+        # `font_pattern` of the caller's own cannot shadow this one.
         # shellcheck disable=SC2086  # FONTS is a space-separated list by design
-        python3 -m font_pattern install --dir "$DIR" \
+        python3 -P -m font_pattern install --dir "$DIR" \
           --cache-dir "$RUNNER_TEMP/font-pattern-cache" $FONTS
         echo "dir=$DIR" >> "$GITHUB_OUTPUT"
         # Typst also searches the per-user directory on its own; naming it

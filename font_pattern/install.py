@@ -61,9 +61,16 @@ def digest(path: Path) -> str:
     return result.hexdigest()
 
 
+def plain_name(name: str) -> str:
+    """A manifest's file name, which must not point outside the directory it lands in."""
+    if not name or name in {".", ".."} or "/" in name or "\\" in name:
+        raise ValueError(f"{name!r} is not a plain file name")
+    return name
+
+
 def download(cache: Path, name: str, urls: list[str], sha256: str) -> Path:
     cache.mkdir(parents=True, exist_ok=True)
-    destination = cache / name
+    destination = cache / plain_name(name)
     if destination.exists() and digest(destination) == sha256:
         return destination
     destination.unlink(missing_ok=True)
@@ -124,7 +131,7 @@ def to_woff2(source: Path, destination: Path) -> None:
 
 def place(source: Path, directory: Path, name: str | None) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
-    destination = directory / (name or source.name)
+    destination = directory / plain_name(name or source.name)
     if destination.suffix == ".woff2" and source.suffix != ".woff2":
         to_woff2(source, destination)
     else:
