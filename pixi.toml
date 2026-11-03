@@ -17,7 +17,6 @@ make = "*"
 typst = "*"
 
 [activation]
-env = { QUARTO_PORT = "8017" }
 scripts = ["scripts/activate.sh"]
 
 [tasks]
@@ -79,7 +78,7 @@ format-strip = { cmd = "python bin/md_formatter.py src --pattern '*.md' -F bin/s
 format-roundtrip = { depends-on = ["format-strip", "format"], description = "Strip the tagging and derive it again, for reading the diff" }
 
 build = { cmd = "quarto render", cwd = "src", description = "Render every format declared by the Quarto sources" }
-serve = { cmd = "quarto preview src --port $QUARTO_PORT --host 0.0.0.0", description = "Preview the Quarto site without installing fonts" }
+preview = { cmd = "bash -c 'exec quarto preview src ${QUARTO_ARGS---no-serve --no-browser --no-navigate}'", description = "Re-render what you save into the output directory; QUARTO_ARGS (default: --no-serve --no-browser --no-navigate) replaces the flags, empty for quarto's own server" }
 clean = { cmd = "make clean", description = "Remove Quarto and vanilla Pandoc output" }
 
 pandoc-build = { cmd = "make all", description = "Render four vanilla Pandoc artifacts for each source document" }

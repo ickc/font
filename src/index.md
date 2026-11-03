@@ -134,9 +134,9 @@ package when `lang` metadata is present, but minimal TeX Live installations may
 not provide it. `scripts/activate.sh` prepends the project-local tree to TeX's
 `.sty` and Lua-module searches while retaining their normal system paths.
 
-`build`, `pandoc-build`, and `serve` never install anything. If setup has not
+`build`, `pandoc-build`, and `preview` never install anything. If setup has not
 been run, rendering fails at the missing font or TeX dependency. To preview the
-Quarto website after setup, run `pixi run serve`. To remove generated outputs,
+Quarto website after setup, run `QUARTO_ARGS= pixi run preview`. To remove generated outputs,
 run `pixi run clean`.
 
 ## Authoring convention
