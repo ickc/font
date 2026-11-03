@@ -29,9 +29,10 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
         with:
+          pixi-version: v0.83.0
           locked: true
       # Fails when a Markdown source is not in the canonical form
       # `pixi run format` produces.
@@ -54,7 +55,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # The action in action.yml, as another repository would use it, except
       # from this checkout rather than from a pinned commit.
       - uses: ./
@@ -84,6 +85,7 @@ jobs:
       - uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
         if: runner.os == 'Linux'
         with:
+          pixi-version: v0.83.0
           locked: true
       - name: Check Typst finds the fonts by name
         if: runner.os == 'Linux'
@@ -108,9 +110,10 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: prefix-dev/setup-pixi@ad1da6449d9e506fd127fd67ab2d054a769f6a94 # v0.11.2
         with:
+          pixi-version: v0.83.0
           locked: true
       # Without a package list this installs the TeX Live infrastructure and
       # nothing else, so `lualatex` is absent and every PDF format fails.
